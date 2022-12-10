@@ -11,6 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  follow_the_leader:
+    git:
+      url: git@github.com:Flutter-Bounty-Hunters/follow_the_leader.git
   logging: ^1.0.1
 
 dev_dependencies:
