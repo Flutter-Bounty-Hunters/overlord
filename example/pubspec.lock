@@ -68,14 +68,14 @@ packages:
     source: sdk
     version: "0.0.0"
   follow_the_leader:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "9e2c5873bf019d0e47329c6dd5f4ebef6076c5c1"
+      resolved-ref: e7ac6a896a9249bdc5094aebd6317ff79a078362
       url: "git@github.com:Flutter-Bounty-Hunters/follow_the_leader.git"
     source: git
-    version: "1.0.0+1"
+    version: "0.0.1"
   js:
     dependency: transitive
     description:
