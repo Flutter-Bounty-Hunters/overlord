@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:overlord/overlord.dart';
+import 'package:overlord/src/menus/menu_with_pointer.dart';
 
 void main() {
   group('iOS Toolbar', () {
@@ -98,7 +99,7 @@ void main() {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 300),
             child: const CupertinoPopoverToolbar(
-              globalFocalPoint: Offset(250, 0),
+              focalPoint: StationaryMenuFocalPoint(Offset(250, 0)),
               children: [
                 CupertinoPopoverToolbarMenuItem(label: 'Style'),
                 CupertinoPopoverToolbarMenuItem(label: 'Duplicate'),
@@ -142,7 +143,7 @@ void main() {
         await _pumpToolbarScaffold(
           tester,
           child: CupertinoPopoverToolbar.paginated(
-            globalFocalPoint: const Offset(250, 0),
+            focalPoint: const StationaryMenuFocalPoint(Offset(250, 0)),
             pages: [
               MenuPage(
                 items: const [
@@ -366,7 +367,7 @@ Future<void> _pumpIosToolbar(
   await _pumpToolbarScaffold(
     tester,
     child: CupertinoPopoverToolbar(
-      globalFocalPoint: arrowFocalPoint,
+      focalPoint: StationaryMenuFocalPoint(arrowFocalPoint),
       children: const [
         CupertinoPopoverToolbarMenuItem(label: 'Style'),
         CupertinoPopoverToolbarMenuItem(label: 'Duplicate'),
@@ -411,7 +412,7 @@ Future<void> _pumpPopoverMenuTestApp(
       home: Scaffold(
         body: Center(
           child: CupertinoPopoverMenu(
-            globalFocalPoint: arrowFocalPoint,
+            focalPoint: StationaryMenuFocalPoint(arrowFocalPoint),
             child: const SizedBox(
               width: 254,
               height: 159,

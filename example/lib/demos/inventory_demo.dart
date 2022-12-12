@@ -16,7 +16,7 @@ class _InventoryDemoState extends State<InventoryDemo> {
         Expanded(
           child: Center(
             child: CupertinoPopoverToolbar(
-              globalFocalPoint: Offset.zero,
+              focalPoint: const StationaryMenuFocalPoint(Offset.zero),
               children: _toolbarMenuItems,
             ),
           ),
@@ -24,7 +24,7 @@ class _InventoryDemoState extends State<InventoryDemo> {
         const Expanded(
           child: Center(
             child: CupertinoPopoverMenu(
-              globalFocalPoint: Offset.zero,
+              focalPoint: StationaryMenuFocalPoint(Offset.zero),
               padding: EdgeInsets.all(16),
               child: Text("Popover Menu"),
             ),

@@ -208,7 +208,7 @@ class _DraggableDemoState extends State<DraggableDemo> {
           child: GestureDetector(
             onPanUpdate: _onPanUpdate,
             child: CupertinoPopoverToolbar(
-              globalFocalPoint: widget.focalPoint,
+              focalPoint: StationaryMenuFocalPoint(widget.focalPoint),
               padding: const EdgeInsets.all(12.0),
               arrowBaseWidth: 21,
               arrowLength: 20,
@@ -248,11 +248,11 @@ class ToolbarExample extends StatelessWidget {
   Widget build(BuildContext context) {
     final toolbar = children != null
         ? CupertinoPopoverToolbar(
-            globalFocalPoint: focalPoint,
+            focalPoint: StationaryMenuFocalPoint(focalPoint),
             children: children!,
           )
         : CupertinoPopoverToolbar.paginated(
-            globalFocalPoint: focalPoint,
+            focalPoint: StationaryMenuFocalPoint(focalPoint),
             pages: pages,
           );
 

@@ -69,7 +69,7 @@ class _ToolbarBouncingBallDemoState extends State<ToolbarBouncingBallDemo> with 
 
   Widget _buildMenu() {
     return CupertinoPopoverToolbar(
-      globalFocalPoint: _globalMenuFocalPoint,
+      focalPoint: StationaryMenuFocalPoint(_globalMenuFocalPoint),
       children: const [
         CupertinoPopoverToolbarMenuItem(label: 'Style'),
         CupertinoPopoverToolbarMenuItem(label: 'Duplicate'),

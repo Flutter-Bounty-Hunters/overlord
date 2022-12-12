@@ -83,7 +83,7 @@ class _WideToolbarDraggableBallDemoState extends State<WideToolbarDraggableBallD
 
   Widget _buildMenu() {
     return CupertinoPopoverToolbar(
-      globalFocalPoint: _globalMenuFocalPoint,
+      focalPoint: StationaryMenuFocalPoint(_globalMenuFocalPoint),
       children: const [
         CupertinoPopoverToolbarMenuItem(label: 'Style'),
         CupertinoPopoverToolbarMenuItem(label: 'Duplicate'),
