@@ -7,7 +7,6 @@ import 'package:example/demos/demo_toolbar_draggable_ball.dart';
 import 'package:example/demos/demo_toolbar_wide_draggable_ball.dart';
 import 'package:example/demos/inventory_demo.dart';
 import 'package:flutter/material.dart';
-import 'package:overlord/overlord.dart';
 
 void main() {
   runApp(const OverlordExampleApp());

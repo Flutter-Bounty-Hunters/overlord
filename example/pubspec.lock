@@ -72,10 +72,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: e7ac6a896a9249bdc5094aebd6317ff79a078362
+      resolved-ref: "0ecf92b46d52ad8fb9ef7928713c930b5df29f05"
       url: "git@github.com:Flutter-Bounty-Hunters/follow_the_leader.git"
     source: git
-    version: "0.0.1"
+    version: "0.0.2"
   js:
     dependency: transitive
     description:
@@ -201,5 +201,5 @@ packages:
     source: hosted
     version: "2.1.4"
 sdks:
-  dart: ">=2.19.0-374.1.beta <4.0.0"
+  dart: ">=2.18.0 <4.0.0"
   flutter: ">=1.17.0"

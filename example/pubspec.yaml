@@ -5,17 +5,20 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.19.0-374.1.beta <3.0.0'
+  sdk: '>=2.18.0 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
 
+  follow_the_leader: ^0.0.1
+  overlord:
+    path: ../
+
+dependency_overrides:
   follow_the_leader:
     git:
       url: git@github.com:Flutter-Bounty-Hunters/follow_the_leader.git
-  overlord:
-    path: ../
 
 dev_dependencies:
   flutter_test:
