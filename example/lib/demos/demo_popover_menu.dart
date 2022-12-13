@@ -154,7 +154,7 @@ class _DraggableDemoState extends State<DraggableDemo> {
           child: GestureDetector(
             onPanUpdate: _onPanUpdate,
             child: CupertinoPopoverMenu(
-              globalFocalPoint: widget.focalPoint,
+              focalPoint: StationaryMenuFocalPoint(widget.focalPoint),
               padding: const EdgeInsets.all(12.0),
               arrowBaseWidth: 21,
               arrowLength: 20,
@@ -195,7 +195,7 @@ class PopoverExample extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: CupertinoPopoverMenu(
-        globalFocalPoint: focalPoint,
+        focalPoint: StationaryMenuFocalPoint(focalPoint),
         padding: const EdgeInsets.all(12.0),
         arrowBaseWidth: 21,
         arrowLength: 20,

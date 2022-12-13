@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:overlord/src/menus/menu_with_pointer.dart';
 
 import 'cupertino_popover_menu.dart';
 
@@ -17,7 +18,7 @@ class CupertinoPopoverToolbar extends StatefulWidget {
   /// If all the items fit inside the available width, next page and previous page buttons aren't displayed.
   const CupertinoPopoverToolbar({
     Key? key,
-    required this.globalFocalPoint,
+    required this.focalPoint,
     this.arrowBaseWidth = 18.0,
     this.arrowLength = 12.0,
     this.height = 39.0,
@@ -31,7 +32,7 @@ class CupertinoPopoverToolbar extends StatefulWidget {
   /// Creates a toolbar which is paginated using [pages].
   const CupertinoPopoverToolbar.paginated({
     super.key,
-    required this.globalFocalPoint,
+    required this.focalPoint,
     this.arrowBaseWidth = 18.0,
     this.arrowLength = 12.0,
     this.height = 39.0,
@@ -41,13 +42,12 @@ class CupertinoPopoverToolbar extends StatefulWidget {
     required this.pages,
   }) : children = null;
 
-  /// Global offset which the arrow should point to.
+  /// Where the toolbar's arrow should point.
   ///
-  /// If the arrow can't point to [globalFocalPoint], e.g.,
-  /// the arrow points up and `globalFocalPoint.dx` is outside
-  /// the menu bounds, then the the arrow will point towards
-  /// [globalFocalPoint] as much as possible.
-  final Offset globalFocalPoint;
+  /// If the arrow can't point to [focalPoint], e.g., the arrow points up and
+  /// [focalPoint] is outside the menu bounds, then the the arrow will point towards
+  /// [focalPoint] as much as possible.
+  final MenuFocalPoint focalPoint;
 
   /// Base of the arrow in pixels.
   ///
@@ -105,7 +105,7 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
       arrowBaseWidth: widget.arrowBaseWidth,
       arrowLength: widget.arrowLength,
       backgroundColor: widget.backgroundColor,
-      globalFocalPoint: widget.globalFocalPoint,
+      focalPoint: widget.focalPoint,
       allowHorizontalArrow: false,
       padding: widget.padding,
       child: _buildContent(),

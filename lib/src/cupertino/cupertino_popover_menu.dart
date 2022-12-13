@@ -2,15 +2,16 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:overlord/src/menus/menu_with_pointer.dart';
 
 /// An iOS-style popover menu.
 ///
 /// A [CupertinoPopoverMenu] displays content within a rounded rectangle shape,
-/// along with an arrow that points in the general direction of the [globalFocalPoint].
+/// along with an arrow that points in the general direction of the [focalPoint].
 class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
   const CupertinoPopoverMenu({
     super.key,
-    required this.globalFocalPoint,
+    required this.focalPoint,
     this.borderRadius = 12.0,
     this.arrowBaseWidth = 18.0,
     this.arrowLength = 12.0,
@@ -21,13 +22,8 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
     super.child,
   });
 
-  /// Global offset which the arrow should point to.
-  ///
-  /// If the arrow can't point to [globalFocalPoint], e.g.,
-  /// the arrow points up and `globalFocalPoint.dx` is outside
-  /// the menu bounds, then the the arrow will point towards
-  /// [globalFocalPoint] as much as possible.
-  final Offset globalFocalPoint;
+  /// Where the toolbar arrow should point.
+  final MenuFocalPoint focalPoint;
 
   /// Indicates whether or not the arrow can point to a horizontal direction.
   ///
@@ -70,7 +66,7 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
       padding: padding,
       screenSize: MediaQuery.of(context).size,
       backgroundColor: backgroundColor,
-      focalPoint: globalFocalPoint,
+      focalPoint: focalPoint,
       allowHorizontalArrow: allowHorizontalArrow,
       showDebugPaint: showDebugPaint,
     );
@@ -85,7 +81,7 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
       ..arrowLength = arrowLength
       ..padding = padding
       ..screenSize = MediaQuery.of(context).size
-      ..focalPoint = globalFocalPoint
+      ..focalPoint = focalPoint
       ..backgroundColor = backgroundColor
       ..allowHorizontalArrow = allowHorizontalArrow
       ..showDebugPaint = showDebugPaint;
@@ -98,7 +94,7 @@ class RenderPopover extends RenderShiftedBox {
     required double arrowWidth,
     required double arrowLength,
     required Color backgroundColor,
-    required Offset focalPoint,
+    required MenuFocalPoint focalPoint,
     required Size screenSize,
     bool allowHorizontalArrow = true,
     EdgeInsets? padding,
@@ -143,9 +139,9 @@ class RenderPopover extends RenderShiftedBox {
     }
   }
 
-  Offset _focalPoint;
-  Offset get focalPoint => _focalPoint;
-  set focalPoint(Offset value) {
+  MenuFocalPoint _focalPoint;
+  MenuFocalPoint get focalPoint => _focalPoint;
+  set focalPoint(MenuFocalPoint value) {
     if (_focalPoint != value) {
       _focalPoint = value;
       markNeedsLayout();
@@ -227,7 +223,8 @@ class RenderPopover extends RenderShiftedBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    final localFocalPoint = globalToLocal(focalPoint);
+    final localFocalPoint = globalToLocal(focalPoint.globalOffset!);
+    print("Menu focal point: ${focalPoint.globalOffset!}");
 
     final contentOffset = _computeContentOffset(arrowLength);
     final direction = _computeArrowDirection(Offset.zero & size, localFocalPoint);

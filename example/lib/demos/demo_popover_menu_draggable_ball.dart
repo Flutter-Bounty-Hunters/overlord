@@ -84,7 +84,7 @@ class _PopoverMenuDraggableBallDemoState extends State<PopoverMenuDraggableBallD
 
   Widget _buildMenu() {
     return CupertinoPopoverMenu(
-      globalFocalPoint: _globalMenuFocalPoint,
+      focalPoint: StationaryMenuFocalPoint(_globalMenuFocalPoint),
       padding: const EdgeInsets.all(12.0),
       child: const SizedBox(
         width: _menuWidth,
