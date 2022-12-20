@@ -224,7 +224,6 @@ class RenderPopover extends RenderShiftedBox {
   @override
   void paint(PaintingContext context, Offset offset) {
     final localFocalPoint = globalToLocal(focalPoint.globalOffset!);
-    print("Menu focal point: ${focalPoint.globalOffset!}");
 
     final contentOffset = _computeContentOffset(arrowLength);
     final direction = _computeArrowDirection(Offset.zero & size, localFocalPoint);
