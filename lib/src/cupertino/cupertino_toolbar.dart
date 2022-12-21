@@ -21,12 +21,13 @@ class CupertinoPopoverToolbar extends StatefulWidget {
     required this.focalPoint,
     this.arrowBaseWidth = 18.0,
     this.arrowLength = 12.0,
-    this.height = 39.0,
+    double? height,
     this.borderRadius = 12.0,
     this.padding,
     this.backgroundColor = const Color(0xFF333333),
     required this.children,
   })  : pages = null,
+        height = height ?? 39.0,
         super(key: key);
 
   /// Creates a toolbar which is paginated using [pages].
@@ -35,12 +36,13 @@ class CupertinoPopoverToolbar extends StatefulWidget {
     required this.focalPoint,
     this.arrowBaseWidth = 18.0,
     this.arrowLength = 12.0,
-    this.height = 39.0,
+    double? height,
     this.borderRadius = 12.0,
     this.padding,
     this.backgroundColor = const Color(0xFF333333),
     required this.pages,
-  }) : children = null;
+  })  : height = height ?? 39.0,
+        children = null;
 
   /// Where the toolbar's arrow should point.
   ///
@@ -116,8 +118,8 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        return ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 39, maxHeight: 39),
+        return SizedBox(
+          height: widget.height,
           child: _IosToolbarMenuContent(
             controller: _controller,
             height: widget.height,
