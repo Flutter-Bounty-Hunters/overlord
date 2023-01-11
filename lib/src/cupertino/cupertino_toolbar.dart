@@ -345,6 +345,8 @@ class _RenderIosPagedMenu extends RenderBox
     }
   }
 
+  bool _hasMultiplePages = false;
+
   @override
   void attach(covariant PipelineOwner owner) {
     super.attach(owner);
@@ -371,7 +373,7 @@ class _RenderIosPagedMenu extends RenderBox
     }
     _scheduleUpdateControllerPageCount();
 
-    final hasMultiplePages = _pages!.length > 1;
+    _hasMultiplePages = _pages!.length > 1;
 
     // Children include the navigation buttons.
     final children = getChildrenAsList();
@@ -393,16 +395,16 @@ class _RenderIosPagedMenu extends RenderBox
     // Page to be displayed.
     final currentPage = _pages![_controller.currentPage - 1];
 
-    double width = 0;
+    double accumulatedWith = 0;
 
-    if (hasMultiplePages) {
+    if (_hasMultiplePages) {
       // Computes previous button position.
       final previousButton = children.first;
       final previousButtonParentData = previousButton.parentData as _IosPagerParentData;
-      previousButtonParentData.offset = Offset(width, (height - previousButton.size.height) / 2);
+      previousButtonParentData.offset = Offset(accumulatedWith, (height - previousButton.size.height) / 2);
 
       // Update current width.
-      width += previousButton.size.width;
+      accumulatedWith += previousButton.size.width;
     }
 
     // Set offset of children which belong to current page.
@@ -410,23 +412,23 @@ class _RenderIosPagedMenu extends RenderBox
       final child = children[i];
       final childSize = child.size;
       final childParentData = child.parentData as _IosPagerParentData;
-      childParentData.offset = Offset(width, (height - childSize.height) / 2);
+      childParentData.offset = Offset(accumulatedWith, (height - childSize.height) / 2);
 
       // Update current width.
-      width += childSize.width;
+      accumulatedWith += childSize.width;
     }
 
-    if (hasMultiplePages) {
+    if (_hasMultiplePages) {
       // Computes next button position.
       final nextButton = children.last;
       final nextButtonButtonParentData = nextButton.parentData as _IosPagerParentData;
-      nextButtonButtonParentData.offset = Offset(width, (height - nextButton.size.height) / 2);
+      nextButtonButtonParentData.offset = Offset(accumulatedWith, (height - nextButton.size.height) / 2);
 
       // Update current width.
-      width += nextButton.size.width;
+      accumulatedWith += nextButton.size.width;
     }
 
-    size = Size(width, height);
+    size = Size(accumulatedWith, height);
   }
 
   @override
@@ -435,9 +437,8 @@ class _RenderIosPagedMenu extends RenderBox
     final page = _pages![_controller.currentPage - 1];
 
     late Offset childOffset;
-    final hasMultiplePages = (_pages?.length ?? 0) > 1;
 
-    if (hasMultiplePages) {
+    if (_hasMultiplePages) {
       // Paint the previous page button.
       final previousButton = children.first;
       childOffset = (previousButton.parentData as _IosPagerParentData).offset;
@@ -448,7 +449,7 @@ class _RenderIosPagedMenu extends RenderBox
       final child = children[i];
       childOffset = (child.parentData as _IosPagerParentData).offset;
 
-      if (hasMultiplePages || i > page.startingIndex) {
+      if (_hasMultiplePages || i > page.startingIndex) {
         // Paint the separator.
         context.canvas.drawLine(
           offset + Offset(childOffset.dx, 0),
@@ -461,7 +462,7 @@ class _RenderIosPagedMenu extends RenderBox
       context.paintChild(child, childOffset + offset);
     }
 
-    if (hasMultiplePages) {
+    if (_hasMultiplePages) {
       final nextButton = children.last;
       childOffset = (nextButton.parentData as _IosPagerParentData).offset;
 
@@ -485,14 +486,15 @@ class _RenderIosPagedMenu extends RenderBox
     final previousButton = children.first;
     final nextButton = children.last;
 
-    // Check if we hit the previous button.
-    if (_hitTestChild(result, position: position, child: previousButton)) {
-      return true;
-    }
-
-    // Check if we hit the next button.
-    if (_hitTestChild(result, position: position, child: nextButton)) {
-      return true;
+    if (_hasMultiplePages) {
+      // Check if we hit the previous button.
+      if (_hitTestChild(result, position: position, child: previousButton)) {
+        return true;
+      }
+      // Check if we hit the next button.
+      if (_hitTestChild(result, position: position, child: nextButton)) {
+        return true;
+      }
     }
 
     // Hit test the items on the current page.
