@@ -194,6 +194,8 @@ class RenderPopover extends RenderShiftedBox {
     markNeedsPaint();
   }
 
+  Offset _contentOffset = Offset.zero;
+
   bool _showDebugPaint = false;
 
   late Paint _backgroundPaint;
@@ -213,6 +215,8 @@ class RenderPopover extends RenderShiftedBox {
       ),
     );
 
+    _contentOffset = _computeContentOffset(arrowLength);
+
     child!.layout(innerConstraints, parentUsesSize: true);
 
     size = constraints.constrain(Size(
@@ -225,7 +229,6 @@ class RenderPopover extends RenderShiftedBox {
   void paint(PaintingContext context, Offset offset) {
     final localFocalPoint = globalToLocal(focalPoint.globalOffset!);
 
-    final contentOffset = _computeContentOffset(arrowLength);
     final direction = _computeArrowDirection(Offset.zero & size, localFocalPoint);
     final arrowCenter = _computeArrowCenter(direction, localFocalPoint);
 
@@ -234,7 +237,7 @@ class RenderPopover extends RenderShiftedBox {
     context.canvas.drawPath(borderPath.shift(offset), _backgroundPaint);
 
     if (child != null) {
-      context.paintChild(child!, offset + contentOffset);
+      context.paintChild(child!, offset + _contentOffset);
     }
 
     if (_showDebugPaint) {
@@ -250,6 +253,13 @@ class RenderPopover extends RenderShiftedBox {
   }
 
   @override
+  void applyPaintTransform(RenderObject child, Matrix4 transform) {
+    // Applying our padding offset to the paint transform lets Flutter's
+    // "Debug Paint" show the correct child widget bounds.
+    return transform.translate(_contentOffset.dx, _contentOffset.dy);
+  }
+
+  @override
   bool hitTest(BoxHitTestResult result, {required Offset position}) {
     if (hitTestChildren(result, position: position)) {
       return true;
@@ -262,13 +272,11 @@ class RenderPopover extends RenderShiftedBox {
 
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
-    final contentOffset = _computeContentOffset(arrowLength);
-
     return result.addWithPaintOffset(
-      offset: contentOffset,
+      offset: _contentOffset,
       position: position,
       hitTest: (BoxHitTestResult result, Offset transformed) {
-        assert(transformed == position - contentOffset);
+        assert(transformed == position - _contentOffset);
         return child?.hitTest(result, position: transformed) ?? false;
       },
     );
