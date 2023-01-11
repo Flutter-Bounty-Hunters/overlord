@@ -1,3 +1,8 @@
+## 0.0.2+1
+`CupertinoPopoverMenu` hit-test fix
+
+* `CupertinoPopoverMenu` was hit-testing its paging buttons even when they were invisible.
+
 ## 0.0.2
 Easier menu arrow orientation:
 
