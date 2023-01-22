@@ -16,11 +16,11 @@ class LeaderMenuFocalPoint implements MenuFocalPoint {
 
   @override
   Offset? get globalOffset {
-    if (!_link.leaderConnected) {
+    if (!_link.leaderConnected || _link.offset == null) {
       return null;
     }
 
-    final leaderRect = _link.leader!.offset & _link.leaderSize!;
+    final leaderRect = _link.offset! & _link.leaderSize!;
     return _alignment.withinRect(leaderRect);
   }
 }
