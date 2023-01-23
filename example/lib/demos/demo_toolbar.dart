@@ -496,6 +496,7 @@ class _ToolbarExampleState extends State<ToolbarExample> {
 
 class _DraggableDemo extends StatefulWidget {
   const _DraggableDemo({
+    // ignore: unused_element
     super.key,
     required this.focalPoint,
     required this.children,
