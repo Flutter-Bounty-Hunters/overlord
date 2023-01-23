@@ -65,8 +65,8 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: bd0be71343d52ecde8d2023e5fc88bc6511eda63
-      url: "git@github.com:Flutter-Bounty-Hunters/follow_the_leader.git"
+      resolved-ref: "028315993573c693d3788b5ceab521ebfdc3e1aa"
+      url: "https://github.com/Flutter-Bounty-Hunters/follow_the_leader"
     source: git
     version: "0.0.3"
   lints:

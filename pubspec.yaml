@@ -14,6 +14,12 @@ dependencies:
   follow_the_leader: ^0.0.3
   logging: ^1.0.1
 
+dependency_overrides:
+  follow_the_leader:
+    git:
+      url: https://github.com/Flutter-Bounty-Hunters/follow_the_leader
+      ref: main
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
