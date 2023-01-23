@@ -1,9 +1,35 @@
+import 'package:file/local.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:overlord/overlord.dart';
+import 'package:platform/platform.dart';
 
 void main() {
+  // Load Material icons to paint left/right arrows on toolbar.
+  setUp(() async {
+    const fs = LocalFileSystem();
+    const platform = LocalPlatform();
+    final flutterRootDir = fs.directory(platform.environment['FLUTTER_ROOT']);
+
+    final iconFont = flutterRootDir.childFile(
+      fs.path.join(
+        'bin',
+        'cache',
+        'artifacts',
+        'material_fonts',
+        'MaterialIcons-Regular.otf',
+      ),
+    );
+
+    final bytes = Future<ByteData>.value(
+      iconFont.readAsBytesSync().buffer.asByteData(),
+    );
+
+    await (FontLoader('MaterialIcons')..addFont(bytes)).load();
+  });
+
   group('iOS Toolbar', () {
     group('pointing up', () {
       testGoldens('with center focal point', (tester) async {

@@ -26,6 +26,10 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   golden_toolkit: ^0.11.0
 
+  # For loading icon font files in tests
+  file: ^6.1.4
+  platform: ^3.1.0
+
 flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
