@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:overlord/overlord.dart';
 import 'package:overlord/src/menus/menu_with_pointer.dart';
 
 /// An iOS-style popover menu.
@@ -227,10 +228,23 @@ class RenderPopover extends RenderShiftedBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    final localFocalPoint = globalToLocal(focalPoint.globalOffset!);
+    late ArrowDirection direction;
+    late double arrowCenter;
 
-    final direction = _computeArrowDirection(Offset.zero & size, localFocalPoint);
-    final arrowCenter = _computeArrowCenter(direction, localFocalPoint);
+    final localFocalPoint = focalPoint.globalOffset != null ? globalToLocal(focalPoint.globalOffset!) : null;
+    if (localFocalPoint != null) {
+      // We have a menu focal point. Orient the arrow towards that
+      // focal point.
+      direction = _computeArrowDirection(Offset.zero & size, localFocalPoint);
+      arrowCenter = _computeArrowCenter(direction, localFocalPoint);
+    } else {
+      // We don't have a menu focal point. Perhaps this is a moment just
+      // before, or just after a focal point becomes available. Until then,
+      // render with the arrow pointing down from the center of the toolbar,
+      // as an arbitrary arrow position.
+      direction = ArrowDirection.down;
+      arrowCenter = 0.5;
+    }
 
     final borderPath = _buildBorderPath(direction, arrowCenter);
 
@@ -248,7 +262,10 @@ class RenderPopover extends RenderShiftedBox {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 5,
       );
-      context.canvas.drawCircle(localFocalPoint, 10, Paint()..color = Colors.blue);
+
+      if (localFocalPoint != null) {
+        context.canvas.drawCircle(localFocalPoint, 10, Paint()..color = Colors.blue);
+      }
     }
   }
 
