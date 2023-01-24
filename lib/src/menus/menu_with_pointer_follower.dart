@@ -20,7 +20,6 @@ class LeaderMenuFocalPoint implements MenuFocalPoint {
       return null;
     }
 
-    final leaderRect = _link.offset! & _link.leaderSize!;
-    return _alignment.withinRect(leaderRect);
+    return _link.getOffsetInLeader(_alignment)!;
   }
 }
