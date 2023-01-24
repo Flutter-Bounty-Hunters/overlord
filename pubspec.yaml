@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  follow_the_leader: ^0.0.3
+  follow_the_leader: ^0.0.4+1
   logging: ^1.0.1
 
 dependency_overrides:
