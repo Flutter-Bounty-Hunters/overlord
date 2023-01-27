@@ -58,10 +58,14 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
 
   /// The z-coordinate relative to the parent at which to place this popover.
   ///
+  /// This controls the size of the shadow below the toolbar and the opacity.
+  ///
   /// The value is non-negative.
   final double elevation;
 
   /// The shadow color.
+  ///
+  /// The opacity is controlled by the [elevation].
   final Color shadowColor;
 
   /// Whether to add decorations that show useful metrics for this popover's

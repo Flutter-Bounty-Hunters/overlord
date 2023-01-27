@@ -28,7 +28,8 @@ class CupertinoPopoverToolbar extends StatefulWidget {
     this.elevation = 0.0,
     this.shadowColor = const Color(0xFF000000),
     required this.children,
-  })  : pages = null,
+  })  : assert(elevation >= 0.0),
+        pages = null,
         height = height ?? 39.0,
         super(key: key);
 
@@ -85,10 +86,14 @@ class CupertinoPopoverToolbar extends StatefulWidget {
 
   /// The z-coordinate relative to the parent at which to place this toolbar.
   ///
+  /// This controls the size of the shadow below the toolbar and the opacity.
+  ///
   /// The value is non-negative.
   final double elevation;
 
   /// The shadow color.
+  ///
+  /// The opacity is controlled by the [elevation].
   final Color shadowColor;
 
   /// Pages of menu items.
