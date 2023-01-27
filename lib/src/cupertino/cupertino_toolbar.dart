@@ -25,6 +25,8 @@ class CupertinoPopoverToolbar extends StatefulWidget {
     this.borderRadius = 12.0,
     this.padding,
     this.backgroundColor = const Color(0xFF333333),
+    this.elevation = 0.0,
+    this.shadowColor = const Color(0xFF000000),
     required this.children,
   })  : pages = null,
         height = height ?? 39.0,
@@ -40,6 +42,8 @@ class CupertinoPopoverToolbar extends StatefulWidget {
     this.borderRadius = 12.0,
     this.padding,
     this.backgroundColor = const Color(0xFF333333),
+    this.elevation = 0.0,
+    this.shadowColor = const Color(0xFF000000),
     required this.pages,
   })  : height = height ?? 39.0,
         children = null;
@@ -79,6 +83,14 @@ class CupertinoPopoverToolbar extends StatefulWidget {
   /// All of the items will have this exact height.
   final double height;
 
+  /// The z-coordinate relative to the parent at which to place this toolbar.
+  ///
+  /// The value is non-negative.
+  final double elevation;
+
+  /// The shadow color.
+  final Color shadowColor;
+
   /// Pages of menu items.
   ///
   /// Can't be provided if [children] are provided.
@@ -107,6 +119,8 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
       arrowBaseWidth: widget.arrowBaseWidth,
       arrowLength: widget.arrowLength,
       backgroundColor: widget.backgroundColor,
+      elevation: widget.elevation,
+      shadowColor: widget.shadowColor,
       focalPoint: widget.focalPoint,
       allowHorizontalArrow: false,
       padding: widget.padding,
