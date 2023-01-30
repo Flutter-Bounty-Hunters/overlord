@@ -56,16 +56,16 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
   /// Color of the menu background.
   final Color backgroundColor;
 
-  /// The z-coordinate relative to the parent at which to place this popover.
+  /// The virtual distance between this menu and the content that sits beneath it, which determines
+  /// the size, opacity, and spread of the menu's shadow.
   ///
-  /// This controls the size of the shadow below the toolbar and the opacity.
-  ///
-  /// The value is non-negative.
+  /// The value must be non-negative.
   final double elevation;
 
-  /// The shadow color.
+  /// The color of the shadow cast by this menu.
   ///
-  /// The opacity is controlled by the [elevation].
+  /// The opacity of [shadowColor] is ignored. Instead, the final opacity of the shadow
+  /// is determined by [elevation].
   final Color shadowColor;
 
   /// Whether to add decorations that show useful metrics for this popover's
@@ -289,11 +289,12 @@ class RenderPopover extends RenderShiftedBox {
     final borderPath = _buildBorderPath(direction, arrowCenter);
 
     if (elevation != 0.0) {
+      final isMenuTranslucent = _backgroundColor.alpha != 0xFF;
       context.canvas.drawShadow(
         borderPath,
         _shadowColor,
         _elevation,
-        _backgroundColor.alpha != 0xFF,
+        isMenuTranslucent,
       );
     }
 

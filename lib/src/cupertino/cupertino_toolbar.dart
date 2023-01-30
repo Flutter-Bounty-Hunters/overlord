@@ -84,16 +84,16 @@ class CupertinoPopoverToolbar extends StatefulWidget {
   /// All of the items will have this exact height.
   final double height;
 
-  /// The z-coordinate relative to the parent at which to place this toolbar.
+  /// The virtual distance between this toolbar and the content that sits beneath it, which determines
+  /// the size, opacity, and spread of the toolbar's shadow.
   ///
-  /// This controls the size of the shadow below the toolbar and the opacity.
-  ///
-  /// The value is non-negative.
+  /// The value must be non-negative.
   final double elevation;
 
-  /// The shadow color.
+  /// The color of the shadow cast by this toolbar.
   ///
-  /// The opacity is controlled by the [elevation].
+  /// The opacity of [shadowColor] is ignored. Instead, the final opacity of the shadow
+  /// is determined by [elevation].
   final Color shadowColor;
 
   /// Pages of menu items.
