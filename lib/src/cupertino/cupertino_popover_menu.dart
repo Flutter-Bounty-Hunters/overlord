@@ -20,8 +20,10 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
     this.backgroundColor = const Color(0xFF474747),
     this.padding,
     this.showDebugPaint = false,
+    this.elevation = 0.0,
+    this.shadowColor = const Color(0xFF000000),
     super.child,
-  });
+  }) : assert(elevation >= 0.0);
 
   /// Where the toolbar arrow should point.
   final MenuFocalPoint focalPoint;
@@ -54,6 +56,18 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
   /// Color of the menu background.
   final Color backgroundColor;
 
+  /// The virtual distance between this menu and the content that sits beneath it, which determines
+  /// the size, opacity, and spread of the menu's shadow.
+  ///
+  /// The value must be non-negative.
+  final double elevation;
+
+  /// The color of the shadow cast by this menu.
+  ///
+  /// The opacity of [shadowColor] is ignored. Instead, the final opacity of the shadow
+  /// is determined by [elevation].
+  final Color shadowColor;
+
   /// Whether to add decorations that show useful metrics for this popover's
   /// layout and position.
   final bool showDebugPaint;
@@ -67,6 +81,8 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
       padding: padding,
       screenSize: MediaQuery.of(context).size,
       backgroundColor: backgroundColor,
+      elevation: elevation,
+      shadowColor: shadowColor,
       focalPoint: focalPoint,
       allowHorizontalArrow: allowHorizontalArrow,
       showDebugPaint: showDebugPaint,
@@ -84,6 +100,8 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
       ..screenSize = MediaQuery.of(context).size
       ..focalPoint = focalPoint
       ..backgroundColor = backgroundColor
+      ..elevation = elevation
+      ..shadowColor = shadowColor
       ..allowHorizontalArrow = allowHorizontalArrow
       ..showDebugPaint = showDebugPaint;
   }
@@ -95,6 +113,8 @@ class RenderPopover extends RenderShiftedBox {
     required double arrowWidth,
     required double arrowLength,
     required Color backgroundColor,
+    required double elevation,
+    required Color shadowColor,
     required MenuFocalPoint focalPoint,
     required Size screenSize,
     bool allowHorizontalArrow = true,
@@ -107,6 +127,8 @@ class RenderPopover extends RenderShiftedBox {
         _padding = padding,
         _screenSize = screenSize,
         _backgroundColor = backgroundColor,
+        _elevation = elevation,
+        _shadowColor = shadowColor,
         _backgroundPaint = Paint()..color = backgroundColor,
         _focalPoint = focalPoint,
         _allowHorizontalArrow = allowHorizontalArrow,
@@ -173,6 +195,24 @@ class RenderPopover extends RenderShiftedBox {
     if (value != _backgroundColor) {
       _backgroundColor = value;
       _backgroundPaint = Paint()..color = _backgroundColor;
+      markNeedsPaint();
+    }
+  }
+
+  double _elevation;
+  double get elevation => _elevation;
+  set elevation(double value) {
+    if (value != _elevation) {
+      _elevation = value;
+      markNeedsPaint();
+    }
+  }
+
+  Color _shadowColor;
+  Color get shadowColor => _shadowColor;
+  set shadowColor(Color value) {
+    if (value != _shadowColor) {
+      _shadowColor = value;
       markNeedsPaint();
     }
   }
@@ -247,6 +287,16 @@ class RenderPopover extends RenderShiftedBox {
     }
 
     final borderPath = _buildBorderPath(direction, arrowCenter);
+
+    if (elevation != 0.0) {
+      final isMenuTranslucent = _backgroundColor.alpha != 0xFF;
+      context.canvas.drawShadow(
+        borderPath,
+        _shadowColor,
+        _elevation,
+        isMenuTranslucent,
+      );
+    }
 
     context.canvas.drawPath(borderPath.shift(offset), _backgroundPaint);
 
