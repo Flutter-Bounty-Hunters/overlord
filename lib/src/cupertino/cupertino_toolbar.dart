@@ -27,6 +27,8 @@ class CupertinoPopoverToolbar extends StatefulWidget {
     this.backgroundColor = const Color(0xFF333333),
     this.elevation = 0.0,
     this.shadowColor = const Color(0xFF000000),
+    this.activeArrowColor = Colors.white,
+    this.inactiveArrowColor = Colors.grey,
     required this.children,
   })  : assert(elevation >= 0.0),
         pages = null,
@@ -45,6 +47,8 @@ class CupertinoPopoverToolbar extends StatefulWidget {
     this.backgroundColor = const Color(0xFF333333),
     this.elevation = 0.0,
     this.shadowColor = const Color(0xFF000000),
+    this.activeArrowColor = Colors.white,
+    this.inactiveArrowColor = Colors.grey,
     required this.pages,
   })  : height = height ?? 39.0,
         children = null;
@@ -95,6 +99,10 @@ class CupertinoPopoverToolbar extends StatefulWidget {
   /// The opacity of [shadowColor] is ignored. Instead, the final opacity of the shadow
   /// is determined by [elevation].
   final Color shadowColor;
+
+  final Color activeArrowColor;
+
+  final Color inactiveArrowColor;
 
   /// Pages of menu items.
   ///
@@ -158,6 +166,8 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(0),
         minimumSize: const Size(30, 0),
+        splashFactory: NoSplash.splashFactory,
+        shape: const LinearBorder(),
       ),
       onPressed: _controller.previous,
       child: Icon(
@@ -173,6 +183,8 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(0),
         minimumSize: const Size(30, 0),
+        splashFactory: NoSplash.splashFactory,
+        shape: const LinearBorder(),
       ),
       onPressed: _controller.next,
       child: Icon(

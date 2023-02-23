@@ -298,6 +298,7 @@ class RenderPopover extends RenderShiftedBox {
       );
     }
 
+    context.canvas.clipPath(borderPath);
     context.canvas.drawPath(borderPath.shift(offset), _backgroundPaint);
 
     if (child != null) {
