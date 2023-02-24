@@ -27,8 +27,8 @@ class CupertinoPopoverToolbar extends StatefulWidget {
     this.backgroundColor = const Color(0xFF333333),
     this.elevation = 0.0,
     this.shadowColor = const Color(0xFF000000),
-    this.activeArrowColor = Colors.white,
-    this.inactiveArrowColor = Colors.grey,
+    this.activeButtonTextColor = Colors.white,
+    this.inactiveButtonTextColor = Colors.grey,
     required this.children,
   })  : assert(elevation >= 0.0),
         pages = null,
@@ -47,8 +47,8 @@ class CupertinoPopoverToolbar extends StatefulWidget {
     this.backgroundColor = const Color(0xFF333333),
     this.elevation = 0.0,
     this.shadowColor = const Color(0xFF000000),
-    this.activeArrowColor = Colors.white,
-    this.inactiveArrowColor = Colors.grey,
+    this.activeButtonTextColor = Colors.white,
+    this.inactiveButtonTextColor = Colors.grey,
     required this.pages,
   })  : height = height ?? 39.0,
         children = null;
@@ -100,9 +100,15 @@ class CupertinoPopoverToolbar extends StatefulWidget {
   /// is determined by [elevation].
   final Color shadowColor;
 
-  final Color activeArrowColor;
+  /// Text color for active buttons.
+  ///
+  /// Used for previous page and next page buttons.
+  final Color activeButtonTextColor;
 
-  final Color inactiveArrowColor;
+  /// Text color for inactive buttons.
+  ///
+  /// Used for previous page and next page buttons.
+  final Color inactiveButtonTextColor;
 
   /// Pages of menu items.
   ///
@@ -146,10 +152,10 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
       animation: _controller,
       builder: (context, child) {
         return SizedBox(
-          height: widget.height,
+          height: widget.height + (widget.arrowLength * 2),
           child: _IosToolbarMenuContent(
             controller: _controller,
-            height: widget.height,
+            height: widget.height + (widget.arrowLength * 2),
             previousButton: _buildPreviousPageButton(),
             nextButton: _buildNextPageButton(),
             pages: widget.pages,
@@ -165,14 +171,15 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
     return TextButton(
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(0),
-        minimumSize: const Size(30, 0),
+        minimumSize: const Size(kMinInteractiveDimension, 0),
         splashFactory: NoSplash.splashFactory,
         shape: const LinearBorder(),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       onPressed: _controller.previous,
       child: Icon(
-        Icons.arrow_left,
-        color: _controller.isFirstPage ? Colors.grey : Colors.white,
+        Icons.chevron_left,
+        color: _controller.isFirstPage ? widget.inactiveButtonTextColor : widget.activeButtonTextColor,
       ),
     );
   }
@@ -182,14 +189,15 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
     return TextButton(
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(0),
-        minimumSize: const Size(30, 0),
+        minimumSize: const Size(kMinInteractiveDimension, 0),
         splashFactory: NoSplash.splashFactory,
         shape: const LinearBorder(),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       onPressed: _controller.next,
       child: Icon(
-        Icons.arrow_right,
-        color: _controller.isLastPage ? Colors.grey : Colors.white,
+        Icons.chevron_right,
+        color: _controller.isLastPage ? widget.inactiveButtonTextColor : widget.activeButtonTextColor,
       ),
     );
   }

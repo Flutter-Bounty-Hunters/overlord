@@ -22,6 +22,7 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
     this.showDebugPaint = false,
     this.elevation = 0.0,
     this.shadowColor = const Color(0xFF000000),
+    this.useArrowArea = false,
     super.child,
   }) : assert(elevation >= 0.0);
 
@@ -67,6 +68,11 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
   /// The opacity of [shadowColor] is ignored. Instead, the final opacity of the shadow
   /// is determined by [elevation].
   final Color shadowColor;
+
+  /// Whether or not the [child] will use the area of the arrow.
+  ///
+  /// If `true`, [child] will be painted and respond to hit-tests on the arrow area.
+  final bool useArrowArea;
 
   /// Whether to add decorations that show useful metrics for this popover's
   /// layout and position.
@@ -251,7 +257,7 @@ class RenderPopover extends RenderShiftedBox {
     // Compute the child constraints to leave space for the arrow and padding.
     final innerConstraints = constraints.enforce(
       BoxConstraints(
-        maxHeight: min(_screenSize.height, constraints.maxHeight) - reservedSize.height,
+        maxHeight: min(_screenSize.height, constraints.maxHeight) - reservedSize.height - arrowLength,
         maxWidth: min(_screenSize.width, constraints.maxWidth) - reservedSize.width,
       ),
     );
@@ -262,31 +268,15 @@ class RenderPopover extends RenderShiftedBox {
 
     size = constraints.constrain(Size(
       reservedSize.width + child!.size.width,
-      reservedSize.height + child!.size.height,
+      reservedSize.height + child!.size.height - arrowLength * 2,
     ));
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    late ArrowDirection direction;
-    late double arrowCenter;
-
     final localFocalPoint = focalPoint.globalOffset != null ? globalToLocal(focalPoint.globalOffset!) : null;
-    if (localFocalPoint != null) {
-      // We have a menu focal point. Orient the arrow towards that
-      // focal point.
-      direction = _computeArrowDirection(Offset.zero & size, localFocalPoint);
-      arrowCenter = _computeArrowCenter(direction, localFocalPoint);
-    } else {
-      // We don't have a menu focal point. Perhaps this is a moment just
-      // before, or just after a focal point becomes available. Until then,
-      // render with the arrow pointing down from the center of the toolbar,
-      // as an arbitrary arrow position.
-      direction = ArrowDirection.down;
-      arrowCenter = 0.5;
-    }
 
-    final borderPath = _buildBorderPath(direction, arrowCenter);
+    final borderPath = _buildBorderForOffset(offset);
 
     if (elevation != 0.0) {
       final isMenuTranslucent = _backgroundColor.alpha != 0xFF;
@@ -329,6 +319,11 @@ class RenderPopover extends RenderShiftedBox {
 
   @override
   bool hitTest(BoxHitTestResult result, {required Offset position}) {
+    final borderPath = _buildBorderForOffset(position);
+    if (!borderPath.contains(position)) {
+      return false;
+    }
+
     if (hitTestChildren(result, position: position)) {
       return true;
     }
@@ -348,6 +343,28 @@ class RenderPopover extends RenderShiftedBox {
         return child?.hitTest(result, position: transformed) ?? false;
       },
     );
+  }
+
+  Path _buildBorderForOffset(Offset offset) {
+    late ArrowDirection direction;
+    late double arrowCenter;
+
+    final localFocalPoint = focalPoint.globalOffset != null ? globalToLocal(focalPoint.globalOffset!) : null;
+    if (localFocalPoint != null) {
+      // We have a menu focal point. Orient the arrow towards that
+      // focal point.
+      direction = _computeArrowDirection(Offset.zero & size, localFocalPoint);
+      arrowCenter = _computeArrowCenter(direction, localFocalPoint);
+    } else {
+      // We don't have a menu focal point. Perhaps this is a moment just
+      // before, or just after a focal point becomes available. Until then,
+      // render with the arrow pointing down from the center of the toolbar,
+      // as an arbitrary arrow position.
+      direction = ArrowDirection.down;
+      arrowCenter = 0.5;
+    }
+
+    return _buildBorderPath(direction, arrowCenter);
   }
 
   /// Builds the path used to paint the menu.
@@ -433,7 +450,7 @@ class RenderPopover extends RenderShiftedBox {
   Offset _computeContentOffset(double arrowLength) {
     return Offset(
       (padding?.left ?? 0) + arrowLength,
-      (padding?.top ?? 0) + arrowLength,
+      (padding?.top ?? 0),
     );
   }
 
