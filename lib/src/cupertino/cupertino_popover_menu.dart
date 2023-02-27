@@ -91,6 +91,7 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
       shadowColor: shadowColor,
       focalPoint: focalPoint,
       allowHorizontalArrow: allowHorizontalArrow,
+      useArrowArea: useArrowArea,
       showDebugPaint: showDebugPaint,
     );
   }
@@ -109,6 +110,7 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
       ..elevation = elevation
       ..shadowColor = shadowColor
       ..allowHorizontalArrow = allowHorizontalArrow
+      ..useArrowArea = useArrowArea
       ..showDebugPaint = showDebugPaint;
   }
 }
@@ -124,6 +126,7 @@ class RenderPopover extends RenderShiftedBox {
     required MenuFocalPoint focalPoint,
     required Size screenSize,
     bool allowHorizontalArrow = true,
+    bool useArrowArea = false,
     EdgeInsets? padding,
     bool showDebugPaint = false,
     RenderBox? child,
@@ -138,6 +141,7 @@ class RenderPopover extends RenderShiftedBox {
         _backgroundPaint = Paint()..color = backgroundColor,
         _focalPoint = focalPoint,
         _allowHorizontalArrow = allowHorizontalArrow,
+        _useArrowArea = useArrowArea,
         _showDebugPaint = showDebugPaint,
         super(child);
 
@@ -232,6 +236,15 @@ class RenderPopover extends RenderShiftedBox {
     }
   }
 
+  bool get useArrowArea => _useArrowArea;
+  bool _useArrowArea;
+  set useArrowArea(bool value) {
+    if (value != _useArrowArea) {
+      _useArrowArea = value;
+      markNeedsLayout();
+    }
+  }
+
   set showDebugPaint(bool newValue) {
     if (newValue == _showDebugPaint) {
       return;
@@ -250,14 +263,14 @@ class RenderPopover extends RenderShiftedBox {
   @override
   void performLayout() {
     final reservedSize = Size(
-      (padding?.horizontal ?? 0) + (arrowLength * 2),
-      (padding?.vertical ?? 0) + (arrowLength * 2),
+      (padding?.horizontal ?? 0) + _reservedSizeForArrow.width,
+      (padding?.vertical ?? 0) + _reservedSizeForArrow.height,
     );
 
     // Compute the child constraints to leave space for the arrow and padding.
     final innerConstraints = constraints.enforce(
       BoxConstraints(
-        maxHeight: min(_screenSize.height, constraints.maxHeight) - reservedSize.height - arrowLength,
+        maxHeight: min(_screenSize.height, constraints.maxHeight) - reservedSize.height,
         maxWidth: min(_screenSize.width, constraints.maxWidth) - reservedSize.width,
       ),
     );
@@ -268,7 +281,7 @@ class RenderPopover extends RenderShiftedBox {
 
     size = constraints.constrain(Size(
       reservedSize.width + child!.size.width,
-      reservedSize.height + child!.size.height - arrowLength * 2,
+      reservedSize.height + child!.size.height,
     ));
   }
 
@@ -276,7 +289,7 @@ class RenderPopover extends RenderShiftedBox {
   void paint(PaintingContext context, Offset offset) {
     final localFocalPoint = focalPoint.globalOffset != null ? globalToLocal(focalPoint.globalOffset!) : null;
 
-    final borderPath = _buildBorderForOffset(offset);
+    final borderPath = _buildBorderPathForOffset(offset);
 
     if (elevation != 0.0) {
       final isMenuTranslucent = _backgroundColor.alpha != 0xFF;
@@ -319,7 +332,7 @@ class RenderPopover extends RenderShiftedBox {
 
   @override
   bool hitTest(BoxHitTestResult result, {required Offset position}) {
-    final borderPath = _buildBorderForOffset(position);
+    final borderPath = _buildBorderPathForOffset(position);
     if (!borderPath.contains(position)) {
       return false;
     }
@@ -345,7 +358,7 @@ class RenderPopover extends RenderShiftedBox {
     );
   }
 
-  Path _buildBorderForOffset(Offset offset) {
+  Path _buildBorderPathForOffset(Offset offset) {
     late ArrowDirection direction;
     late double arrowCenter;
 
@@ -373,14 +386,14 @@ class RenderPopover extends RenderShiftedBox {
   Path _buildBorderPath(ArrowDirection arrowDirection, double arrowCenter) {
     final halfOfBase = arrowBaseWidth / 2;
 
-    // Adjust the rect to leave space for the arrow.
+    // Adjust the size to leave space for the arrow.
     // During layout, we reserve space for the arrow in both x and y axis.
-    final contentRect = Rect.fromLTWH(
-      arrowLength,
-      arrowLength,
-      size.width - arrowLength * 2,
+    final sizeWithoutArrow = Size(
+      size.width - (allowHorizontalArrow ? arrowLength * 2 : 0),
       size.height - arrowLength * 2,
     );
+
+    final contentRect = _borderOffset & sizeWithoutArrow;
 
     Path path = Path()..addRRect(RRect.fromRectAndRadius(contentRect, Radius.circular(borderRadius)));
 
@@ -449,8 +462,8 @@ class RenderPopover extends RenderShiftedBox {
   /// Computes the (x, y) offset used to paint the menu content inside the popover.
   Offset _computeContentOffset(double arrowLength) {
     return Offset(
-      (padding?.left ?? 0) + arrowLength,
-      (padding?.top ?? 0),
+      (padding?.left ?? 0) + (_reservedSizeForArrow.width / 2.0),
+      (padding?.top ?? 0) + (_reservedSizeForArrow.height / 2.0),
     );
   }
 
@@ -469,11 +482,12 @@ class RenderPopover extends RenderShiftedBox {
       : _maxArrowVerticalCenter(arrowDirection);
 
   /// Minimum distance on the x-axis in which the arrow can be displayed without being above the corner.
-  double _minArrowHorizontalCenter(ArrowDirection arrowDirection) => (borderRadius + arrowBaseWidth / 2) + arrowLength;
+  double _minArrowHorizontalCenter(ArrowDirection arrowDirection) =>
+      (borderRadius + arrowBaseWidth / 2) + _borderOffset.dx;
 
   /// Maximum distance on the x-axis in which the arrow can be displayed without being above the corner.
   double _maxArrowHorizontalCenter(ArrowDirection arrowDirection) =>
-      (size.width - borderRadius - arrowBaseWidth - arrowLength / 2);
+      (size.width - borderRadius - arrowBaseWidth - _borderOffset.dx / 2);
 
   /// Minimum distance on the y-axis which the arrow can be displayed without being above the corner.
   double _minArrowVerticalCenter(ArrowDirection arrowDirection) => (borderRadius + arrowBaseWidth / 2) + arrowLength;
@@ -486,6 +500,23 @@ class RenderPopover extends RenderShiftedBox {
   double _constrainFocalPoint(double desiredFocalPoint, ArrowDirection arrowDirection) {
     return min(max(desiredFocalPoint, _minArrowFocalPoint(arrowDirection)), _maxArrowFocalPoint(arrowDirection));
   }
+
+  /// Returns the size which must be reserved to display the arrow.
+  ///
+  /// When [useArrowArea] is `true`, the [child] can take the space that is reserved for the arrow.
+  /// During paint, the [child] is clipped using the border shape.
+  ///
+  /// When [allowHorizontalArrow] is `false`, the reserved width is always zero.
+  Size get _reservedSizeForArrow => Size(
+        (allowHorizontalArrow ? arrowLength * 2 : 0),
+        (useArrowArea ? 0.0 : arrowLength * 2),
+      );
+
+  /// Returns the offset where the border is painted.
+  Offset get _borderOffset => Offset(
+        (allowHorizontalArrow ? arrowLength : 0),
+        arrowLength,
+      );
 }
 
 /// Direction where a arrow points to.

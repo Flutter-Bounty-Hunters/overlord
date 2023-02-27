@@ -143,19 +143,25 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
       focalPoint: widget.focalPoint,
       allowHorizontalArrow: false,
       padding: widget.padding,
+      useArrowArea: true,
       child: _buildContent(),
     );
   }
 
   Widget _buildContent() {
+    // Expand the height so the buttons can be displayed over the arrow.
+    // Multiply by two because the menu reserves space for the arrow both
+    // above and bellow the content.
+    final height = widget.height + (widget.arrowLength * 2);
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
         return SizedBox(
-          height: widget.height + (widget.arrowLength * 2),
+          height: height,
           child: _IosToolbarMenuContent(
             controller: _controller,
-            height: widget.height + (widget.arrowLength * 2),
+            height: height,
             previousButton: _buildPreviousPageButton(),
             nextButton: _buildNextPageButton(),
             pages: widget.pages,
