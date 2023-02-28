@@ -260,6 +260,8 @@ class RenderPopover extends RenderShiftedBox {
 
   late Paint _backgroundPaint;
 
+  final LayerHandle<ClipPathLayer> _clipPathLayer = LayerHandle<ClipPathLayer>();
+
   @override
   void performLayout() {
     final reservedSize = Size(
@@ -301,12 +303,20 @@ class RenderPopover extends RenderShiftedBox {
       );
     }
 
-    context.canvas.clipPath(borderPath);
     context.canvas.drawPath(borderPath.shift(offset), _backgroundPaint);
 
-    if (child != null) {
-      context.paintChild(child!, offset + _contentOffset);
-    }
+    _clipPathLayer.layer = context.pushClipPath(
+      needsCompositing,
+      offset,
+      Offset.zero & child!.size,
+      borderPath,
+      (PaintingContext innerContext, Offset innerOffset) {
+        if (child != null) {
+          innerContext.paintChild(child!, innerOffset + _contentOffset);
+        }
+      },
+      oldLayer: _clipPathLayer.layer,
+    );
 
     if (_showDebugPaint) {
       context.canvas.drawRect(
@@ -356,6 +366,12 @@ class RenderPopover extends RenderShiftedBox {
         return child?.hitTest(result, position: transformed) ?? false;
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _clipPathLayer.layer = null;
+    super.dispose();
   }
 
   Path _buildBorderPathForOffset(Offset offset) {
