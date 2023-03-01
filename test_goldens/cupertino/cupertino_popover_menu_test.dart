@@ -37,8 +37,7 @@ void main() {
 
         await _pumpIosToolbar(tester, arrowFocalPoint: const Offset(250, 0));
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/pointing-up-center-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/pointing-up-center-focal-point');
       });
 
       testGoldens('with left focal point', (tester) async {
@@ -46,8 +45,7 @@ void main() {
 
         await _pumpIosToolbar(tester, arrowFocalPoint: const Offset(200, 0));
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/pointing-up-left-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/pointing-up-left-focal-point');
       });
 
       testGoldens('with left focal point too low', (tester) async {
@@ -55,8 +53,7 @@ void main() {
 
         await _pumpIosToolbar(tester, arrowFocalPoint: const Offset(0, 0));
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/pointing-up-left-focal-point-too-low');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/pointing-up-left-focal-point-too-low');
       });
 
       testGoldens('with right focal point', (tester) async {
@@ -64,8 +61,7 @@ void main() {
 
         await _pumpIosToolbar(tester, arrowFocalPoint: const Offset(300, 0));
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/pointing-up-right-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/pointing-up-right-focal-point');
       });
 
       testGoldens('with right focal point too big', (tester) async {
@@ -73,8 +69,7 @@ void main() {
 
         await _pumpIosToolbar(tester, arrowFocalPoint: const Offset(600, 0));
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/pointing-up-right-focal-point-too-big');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/pointing-up-right-focal-point-too-big');
       });
     });
 
@@ -84,8 +79,7 @@ void main() {
 
         await _pumpIosToolbar(tester, arrowFocalPoint: const Offset(250, 1000));
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/pointing-down-center-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/pointing-down-center-focal-point');
       });
 
       testGoldens('with left focal point', (tester) async {
@@ -93,8 +87,7 @@ void main() {
 
         await _pumpIosToolbar(tester, arrowFocalPoint: const Offset(150, 1000));
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/pointing-down-left-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/pointing-down-left-focal-point');
       });
 
       testGoldens('with left focal point too low', (tester) async {
@@ -102,8 +95,7 @@ void main() {
 
         await _pumpIosToolbar(tester, arrowFocalPoint: const Offset(0, 1000));
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/pointing-down-left-focal-point-too-low');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/pointing-down-left-focal-point-too-low');
       });
 
       testGoldens('with right focal point', (tester) async {
@@ -111,18 +103,15 @@ void main() {
 
         await _pumpIosToolbar(tester, arrowFocalPoint: const Offset(350, 1000));
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/pointing-down-right-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/pointing-down-right-focal-point');
       });
 
       testGoldens('with right focal point too big', (tester) async {
         await loadAppFonts();
 
-        await _pumpIosToolbar(tester,
-            arrowFocalPoint: const Offset(1000, 1000));
+        await _pumpIosToolbar(tester, arrowFocalPoint: const Offset(1000, 1000));
 
-        await screenMatchesGolden(tester,
-            'cupertino-toolbar/pointing-down-right-focal-point-too-big');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/pointing-down-right-focal-point-too-big');
       });
     });
 
@@ -152,29 +141,25 @@ void main() {
           ),
         );
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/auto-paginated-page1');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/auto-paginated-page1');
 
         // Tap the next page button.
         await tester.tap(find.widgetWithIcon(TextButton, Icons.chevron_right));
         await tester.pumpAndSettle();
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/auto-paginated-page2');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/auto-paginated-page2');
 
         // Tap the next page button.
         await tester.tap(find.widgetWithIcon(TextButton, Icons.chevron_right));
         await tester.pumpAndSettle();
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/auto-paginated-page3');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/auto-paginated-page3');
 
         // Tap the next page button.
         await tester.tap(find.widgetWithIcon(TextButton, Icons.chevron_right));
         await tester.pumpAndSettle();
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/auto-paginated-page4');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/auto-paginated-page4');
       });
 
       testGoldens('respects manual pagination', (tester) async {
@@ -204,15 +189,13 @@ void main() {
           ),
         );
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/manual-pagination-page1');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/manual-pagination-page1');
 
         // Tap the next page button.
         await tester.tap(find.widgetWithIcon(TextButton, Icons.chevron_right));
         await tester.pumpAndSettle();
 
-        await screenMatchesGolden(
-            tester, 'cupertino-toolbar/manual-pagination-page2');
+        await screenMatchesGolden(tester, 'cupertino-toolbar/manual-pagination-page2');
       });
     });
   });
@@ -225,8 +208,7 @@ void main() {
           arrowFocalPoint: const Offset(250, 0),
         );
 
-        await screenMatchesGolden(
-            tester, 'cupertino-popover-menu/pointing-up-center-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-up-center-focal-point');
       });
 
       testGoldens('with left focal point', (tester) async {
@@ -235,8 +217,7 @@ void main() {
           arrowFocalPoint: const Offset(200, 0),
         );
 
-        await screenMatchesGolden(
-            tester, 'cupertino-popover-menu/pointing-up-left-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-up-left-focal-point');
       });
 
       testGoldens('with left focal point too low', (tester) async {
@@ -245,8 +226,7 @@ void main() {
           arrowFocalPoint: const Offset(118, 0),
         );
 
-        await screenMatchesGolden(tester,
-            'cupertino-popover-menu/pointing-up-left-focal-point-too-low');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-up-left-focal-point-too-low');
       });
 
       testGoldens('with right focal point', (tester) async {
@@ -255,8 +235,7 @@ void main() {
           arrowFocalPoint: const Offset(280, 0),
         );
 
-        await screenMatchesGolden(
-            tester, 'cupertino-popover-menu/pointing-up-right-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-up-right-focal-point');
       });
 
       testGoldens('with right focal point too big', (tester) async {
@@ -265,8 +244,7 @@ void main() {
           arrowFocalPoint: const Offset(358, 0),
         );
 
-        await screenMatchesGolden(tester,
-            'cupertino-popover-menu/pointing-up-right-focal-point-too-big');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-up-right-focal-point-too-big');
       });
     });
 
@@ -277,8 +255,7 @@ void main() {
           arrowFocalPoint: const Offset(250, 1000),
         );
 
-        await screenMatchesGolden(
-            tester, 'cupertino-popover-menu/pointing-down-center-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-down-center-focal-point');
       });
 
       testGoldens('with left focal point', (tester) async {
@@ -287,8 +264,7 @@ void main() {
           arrowFocalPoint: const Offset(210, 1000),
         );
 
-        await screenMatchesGolden(
-            tester, 'cupertino-popover-menu/pointing-down-left-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-down-left-focal-point');
       });
 
       testGoldens('with left focal point too low', (tester) async {
@@ -297,8 +273,7 @@ void main() {
           arrowFocalPoint: const Offset(118, 1000),
         );
 
-        await screenMatchesGolden(tester,
-            'cupertino-popover-menu/pointing-down-left-focal-point-too-low');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-down-left-focal-point-too-low');
       });
 
       testGoldens('with right focal point', (tester) async {
@@ -307,8 +282,7 @@ void main() {
           arrowFocalPoint: const Offset(280, 1000),
         );
 
-        await screenMatchesGolden(
-            tester, 'cupertino-popover-menu/pointing-down-right-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-down-right-focal-point');
       });
 
       testGoldens('with right focal point too big', (tester) async {
@@ -317,18 +291,15 @@ void main() {
           arrowFocalPoint: const Offset(358, 1000),
         );
 
-        await screenMatchesGolden(tester,
-            'cupertino-popover-menu/pointing-down-right-focal-point-too-big');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-down-right-focal-point-too-big');
       });
     });
 
     group('pointing left', () {
       testGoldens('with center focal point', (tester) async {
-        await _pumpPopoverMenuTestApp(tester,
-            arrowFocalPoint: const Offset(0, 242));
+        await _pumpPopoverMenuTestApp(tester, arrowFocalPoint: const Offset(0, 242));
 
-        await screenMatchesGolden(
-            tester, 'cupertino-popover-menu/pointing-left-center-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-left-center-focal-point');
       });
 
       testGoldens('with top focal point', (tester) async {
@@ -337,8 +308,7 @@ void main() {
           arrowFocalPoint: const Offset(0, 200),
         );
 
-        await screenMatchesGolden(
-            tester, 'cupertino-popover-menu/pointing-left-top-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-left-top-focal-point');
       });
 
       testGoldens('with top focal point too low', (tester) async {
@@ -347,8 +317,7 @@ void main() {
           arrowFocalPoint: const Offset(0, 0),
         );
 
-        await screenMatchesGolden(tester,
-            'cupertino-popover-menu/pointing-left-top-focal-point-too-low');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-left-top-focal-point-too-low');
       });
 
       testGoldens('with bottom focal point', (tester) async {
@@ -357,8 +326,7 @@ void main() {
           arrowFocalPoint: const Offset(0, 260),
         );
 
-        await screenMatchesGolden(
-            tester, 'cupertino-popover-menu/pointing-left-bottom-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-left-bottom-focal-point');
       });
 
       testGoldens('with bottom focal point too big', (tester) async {
@@ -367,18 +335,15 @@ void main() {
           arrowFocalPoint: const Offset(0, 1000),
         );
 
-        await screenMatchesGolden(tester,
-            'cupertino-popover-menu/pointing-left-bottom-focal-point-too-big');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-left-bottom-focal-point-too-big');
       });
     });
 
     group('pointing right', () {
       testGoldens('without center focal point', (tester) async {
-        await _pumpPopoverMenuTestApp(tester,
-            arrowFocalPoint: const Offset(1000, 242));
+        await _pumpPopoverMenuTestApp(tester, arrowFocalPoint: const Offset(1000, 242));
 
-        await screenMatchesGolden(
-            tester, 'cupertino-popover-menu/pointing-right-center-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-right-center-focal-point');
       });
 
       testGoldens('with top focal point', (tester) async {
@@ -387,8 +352,7 @@ void main() {
           arrowFocalPoint: const Offset(1000, 200),
         );
 
-        await screenMatchesGolden(
-            tester, 'cupertino-popover-menu/pointing-right-top-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-right-top-focal-point');
       });
 
       testGoldens('with top focal point too low', (tester) async {
@@ -397,8 +361,7 @@ void main() {
           arrowFocalPoint: const Offset(1000, 0),
         );
 
-        await screenMatchesGolden(tester,
-            'cupertino-popover-menu/pointing-right-top-focal-point-too-low');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-right-top-focal-point-too-low');
       });
 
       testGoldens('with bottom focal point', (tester) async {
@@ -407,8 +370,7 @@ void main() {
           arrowFocalPoint: const Offset(1000, 260),
         );
 
-        await screenMatchesGolden(
-            tester, 'cupertino-popover-menu/pointing-right-bottom-focal-point');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-right-bottom-focal-point');
       });
 
       testGoldens('with bottom focal point too big', (tester) async {
@@ -417,8 +379,7 @@ void main() {
           arrowFocalPoint: const Offset(1000, 1000),
         );
 
-        await screenMatchesGolden(tester,
-            'cupertino-popover-menu/pointing-right-bottom-focal-point-too-big');
+        await screenMatchesGolden(tester, 'cupertino-popover-menu/pointing-right-bottom-focal-point-too-big');
       });
     });
   });
@@ -443,8 +404,7 @@ Future<void> _pumpIosToolbar(
   );
 }
 
-Future<void> _pumpToolbarScaffold(WidgetTester tester,
-    {required Widget child}) async {
+Future<void> _pumpToolbarScaffold(WidgetTester tester, {required Widget child}) async {
   tester.binding.window
     ..physicalSizeTestValue = const Size(500, 500)
     ..platformDispatcher.textScaleFactorTestValue = 1.0
