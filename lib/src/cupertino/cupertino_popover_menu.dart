@@ -22,7 +22,7 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
     this.showDebugPaint = false,
     this.elevation = 0.0,
     this.shadowColor = const Color(0xFF000000),
-    this.useArrowArea = false,
+    this.extendAndClipContentOverArrow = false,
     super.child,
   }) : assert(elevation >= 0.0);
 
@@ -69,10 +69,24 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
   /// is determined by [elevation].
   final Color shadowColor;
 
-  /// Whether or not the [child] will use the area of the arrow.
+  /// Whether to extend the popup menu content over the popover's arrow, and clip the content around the arrow.
   ///
-  /// If `true`, [child] will be painted and respond to hit-tests on the arrow area.
-  final bool useArrowArea;
+  /// A popover includes a rectangular content area, and an arrow that points at some relevant content
+  /// beneath the popover. Normally, the content within the popover is confined to the rectangular content
+  /// area - the arrow has no impact on the size of the content. However, in some cases, it's desirable for
+  /// the content to extend into the arrow space.
+  ///
+  /// For example, consider an iOS text editing toolbar. That toolbar appears above selected text with buttons
+  /// for "copy", "cut", "paste", etc. That toolbar has a popover arrow that points down towards the text. When
+  /// the user hovers the mouse over the arrow that points down, that arrow behaves as if it's part of the button
+  /// that sits directly above it. The button above the arrow shows a hover highlight, and if the user taps on the
+  /// little popover arrow, it activates the button right above it. To accomplish this, the buttons for the toolbar
+  /// need to extend vertically to include the height of the popover arrow. Then, those buttons need to be clipped
+  /// so that they match the shape of the arrow.
+  ///
+  /// When this property is `true`, its content is extended to cover the popover arrow, and then that content
+  /// is clipped to reflect the shape of the arrow.
+  final bool extendAndClipContentOverArrow;
 
   /// Whether to add decorations that show useful metrics for this popover's
   /// layout and position.
@@ -91,7 +105,7 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
       shadowColor: shadowColor,
       focalPoint: focalPoint,
       allowHorizontalArrow: allowHorizontalArrow,
-      useArrowArea: useArrowArea,
+      extendAndClipContentOverArrow: extendAndClipContentOverArrow,
       showDebugPaint: showDebugPaint,
     );
   }
@@ -110,7 +124,7 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
       ..elevation = elevation
       ..shadowColor = shadowColor
       ..allowHorizontalArrow = allowHorizontalArrow
-      ..useArrowArea = useArrowArea
+      ..extendAndClipContentOverArrow = extendAndClipContentOverArrow
       ..showDebugPaint = showDebugPaint;
   }
 }
@@ -126,7 +140,7 @@ class RenderPopover extends RenderShiftedBox {
     required MenuFocalPoint focalPoint,
     required Size screenSize,
     bool allowHorizontalArrow = true,
-    bool useArrowArea = false,
+    bool extendAndClipContentOverArrow = false,
     EdgeInsets? padding,
     bool showDebugPaint = false,
     RenderBox? child,
@@ -141,7 +155,7 @@ class RenderPopover extends RenderShiftedBox {
         _backgroundPaint = Paint()..color = backgroundColor,
         _focalPoint = focalPoint,
         _allowHorizontalArrow = allowHorizontalArrow,
-        _useArrowArea = useArrowArea,
+        _extendAndClipContentOverArrow = extendAndClipContentOverArrow,
         _showDebugPaint = showDebugPaint,
         super(child);
 
@@ -236,11 +250,11 @@ class RenderPopover extends RenderShiftedBox {
     }
   }
 
-  bool get useArrowArea => _useArrowArea;
-  bool _useArrowArea;
-  set useArrowArea(bool value) {
-    if (value != _useArrowArea) {
-      _useArrowArea = value;
+  bool get extendAndClipContentOverArrow => _extendAndClipContentOverArrow;
+  bool _extendAndClipContentOverArrow;
+  set extendAndClipContentOverArrow(bool value) {
+    if (value != _extendAndClipContentOverArrow) {
+      _extendAndClipContentOverArrow = value;
       markNeedsLayout();
     }
   }
@@ -254,6 +268,23 @@ class RenderPopover extends RenderShiftedBox {
     markNeedsPaint();
   }
 
+  /// Returns the size which must be reserved to display the arrow.
+  ///
+  /// When [extendAndClipContentOverArrow] is `true`, the [child] can take the space that is reserved for the arrow.
+  /// During paint, the [child] is clipped using the background shape.
+  ///
+  /// When [allowHorizontalArrow] is `false`, the reserved width is always zero.
+  Size get _reservedSizeForArrow => Size(
+        (allowHorizontalArrow ? arrowLength * 2 : 0),
+        (extendAndClipContentOverArrow ? 0.0 : arrowLength * 2),
+      );
+
+  /// Returns the background shape offset from the top left corner.
+  Offset get _shapeOffset => Offset(
+        (allowHorizontalArrow ? arrowLength : 0),
+        arrowLength,
+      );
+
   Offset _contentOffset = Offset.zero;
 
   bool _showDebugPaint = false;
@@ -261,6 +292,8 @@ class RenderPopover extends RenderShiftedBox {
   late Paint _backgroundPaint;
 
   final LayerHandle<ClipPathLayer> _clipPathLayer = LayerHandle<ClipPathLayer>();
+
+  Path? _backgroundShapePath;
 
   @override
   void performLayout() {
@@ -289,31 +322,48 @@ class RenderPopover extends RenderShiftedBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    final localFocalPoint = focalPoint.globalOffset != null ? globalToLocal(focalPoint.globalOffset!) : null;
+    late ArrowDirection direction;
+    late double arrowCenter;
 
-    final borderPath = _buildBorderPathForOffset(offset);
+    final localFocalPoint = focalPoint.globalOffset != null ? globalToLocal(focalPoint.globalOffset!) : null;
+    if (localFocalPoint != null) {
+      // We have a menu focal point. Orient the arrow towards that
+      // focal point.
+      direction = _computeArrowDirection(Offset.zero & size, localFocalPoint);
+      arrowCenter = _computeArrowCenter(direction, localFocalPoint);
+    } else {
+      // We don't have a menu focal point. Perhaps this is a moment just
+      // before, or just after a focal point becomes available. Until then,
+      // render with the arrow pointing down from the center of the toolbar,
+      // as an arbitrary arrow position.
+      direction = ArrowDirection.down;
+      arrowCenter = 0.5;
+    }
+
+    final backgroundShapePath = _buildBackgroundShapePath(direction, arrowCenter);
+
+    // Cache the background shape path, so it can be used in hit-testing.
+    _backgroundShapePath = backgroundShapePath;
 
     if (elevation != 0.0) {
       final isMenuTranslucent = _backgroundColor.alpha != 0xFF;
       context.canvas.drawShadow(
-        borderPath,
+        backgroundShapePath,
         _shadowColor,
         _elevation,
         isMenuTranslucent,
       );
     }
 
-    context.canvas.drawPath(borderPath.shift(offset), _backgroundPaint);
+    context.canvas.drawPath(backgroundShapePath.shift(offset), _backgroundPaint);
 
     _clipPathLayer.layer = context.pushClipPath(
       needsCompositing,
       offset,
       Offset.zero & child!.size,
-      borderPath,
+      backgroundShapePath,
       (PaintingContext innerContext, Offset innerOffset) {
-        if (child != null) {
-          innerContext.paintChild(child!, innerOffset + _contentOffset);
-        }
+        innerContext.paintChild(child!, innerOffset + _contentOffset);
       },
       oldLayer: _clipPathLayer.layer,
     );
@@ -342,8 +392,11 @@ class RenderPopover extends RenderShiftedBox {
 
   @override
   bool hitTest(BoxHitTestResult result, {required Offset position}) {
-    final borderPath = _buildBorderPathForOffset(position);
-    if (!borderPath.contains(position)) {
+    if (_backgroundShapePath == null) {
+      return false;
+    }
+
+    if (!_backgroundShapePath!.contains(position)) {
       return false;
     }
 
@@ -374,32 +427,10 @@ class RenderPopover extends RenderShiftedBox {
     super.dispose();
   }
 
-  Path _buildBorderPathForOffset(Offset offset) {
-    late ArrowDirection direction;
-    late double arrowCenter;
-
-    final localFocalPoint = focalPoint.globalOffset != null ? globalToLocal(focalPoint.globalOffset!) : null;
-    if (localFocalPoint != null) {
-      // We have a menu focal point. Orient the arrow towards that
-      // focal point.
-      direction = _computeArrowDirection(Offset.zero & size, localFocalPoint);
-      arrowCenter = _computeArrowCenter(direction, localFocalPoint);
-    } else {
-      // We don't have a menu focal point. Perhaps this is a moment just
-      // before, or just after a focal point becomes available. Until then,
-      // render with the arrow pointing down from the center of the toolbar,
-      // as an arbitrary arrow position.
-      direction = ArrowDirection.down;
-      arrowCenter = 0.5;
-    }
-
-    return _buildBorderPath(direction, arrowCenter);
-  }
-
   /// Builds the path used to paint the menu.
   ///
   /// The path includes a rounded rectangle and a arrow pointing to [arrowDirection], centered at [arrowCenter].
-  Path _buildBorderPath(ArrowDirection arrowDirection, double arrowCenter) {
+  Path _buildBackgroundShapePath(ArrowDirection arrowDirection, double arrowCenter) {
     final halfOfBase = arrowBaseWidth / 2;
 
     // Adjust the size to leave space for the arrow.
@@ -409,7 +440,7 @@ class RenderPopover extends RenderShiftedBox {
       size.height - arrowLength * 2,
     );
 
-    final contentRect = _borderOffset & sizeWithoutArrow;
+    final contentRect = _shapeOffset & sizeWithoutArrow;
 
     Path path = Path()..addRRect(RRect.fromRectAndRadius(contentRect, Radius.circular(borderRadius)));
 
@@ -499,11 +530,11 @@ class RenderPopover extends RenderShiftedBox {
 
   /// Minimum distance on the x-axis in which the arrow can be displayed without being above the corner.
   double _minArrowHorizontalCenter(ArrowDirection arrowDirection) =>
-      (borderRadius + arrowBaseWidth / 2) + _borderOffset.dx;
+      (borderRadius + arrowBaseWidth / 2) + _shapeOffset.dx;
 
   /// Maximum distance on the x-axis in which the arrow can be displayed without being above the corner.
   double _maxArrowHorizontalCenter(ArrowDirection arrowDirection) =>
-      (size.width - borderRadius - arrowBaseWidth - _borderOffset.dx / 2);
+      (size.width - borderRadius - arrowBaseWidth - _shapeOffset.dx / 2);
 
   /// Minimum distance on the y-axis which the arrow can be displayed without being above the corner.
   double _minArrowVerticalCenter(ArrowDirection arrowDirection) => (borderRadius + arrowBaseWidth / 2) + arrowLength;
@@ -516,23 +547,6 @@ class RenderPopover extends RenderShiftedBox {
   double _constrainFocalPoint(double desiredFocalPoint, ArrowDirection arrowDirection) {
     return min(max(desiredFocalPoint, _minArrowFocalPoint(arrowDirection)), _maxArrowFocalPoint(arrowDirection));
   }
-
-  /// Returns the size which must be reserved to display the arrow.
-  ///
-  /// When [useArrowArea] is `true`, the [child] can take the space that is reserved for the arrow.
-  /// During paint, the [child] is clipped using the border shape.
-  ///
-  /// When [allowHorizontalArrow] is `false`, the reserved width is always zero.
-  Size get _reservedSizeForArrow => Size(
-        (allowHorizontalArrow ? arrowLength * 2 : 0),
-        (useArrowArea ? 0.0 : arrowLength * 2),
-      );
-
-  /// Returns the offset where the border is painted.
-  Offset get _borderOffset => Offset(
-        (allowHorizontalArrow ? arrowLength : 0),
-        arrowLength,
-      );
 }
 
 /// Direction where a arrow points to.
