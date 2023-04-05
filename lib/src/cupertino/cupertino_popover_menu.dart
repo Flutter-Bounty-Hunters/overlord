@@ -303,7 +303,7 @@ class RenderPopover extends RenderShiftedBox {
     );
 
     // Compute the child constraints to leave space for the arrow and padding.
-    final innerConstraints = constraints.enforce(
+    BoxConstraints innerConstraints = constraints.enforce(
       BoxConstraints(
         maxHeight: min(_screenSize.height, constraints.maxHeight) - reservedSize.height,
         maxWidth: min(_screenSize.width, constraints.maxWidth) - reservedSize.width,
@@ -311,6 +311,16 @@ class RenderPopover extends RenderShiftedBox {
     );
 
     _contentOffset = _computeContentOffset(arrowLength);
+
+    if (_extendAndClipContentOverArrow) {
+      // Compute the size the child wants to be.
+      final desiredSize = child!.getDryLayout(innerConstraints);
+
+      // Add room for the arrow in both top and bottom.
+      innerConstraints = constraints.enforce(
+        BoxConstraints(minHeight: desiredSize.height + arrowLength * 2),
+      );
+    }
 
     child!.layout(innerConstraints, parentUsesSize: true);
 

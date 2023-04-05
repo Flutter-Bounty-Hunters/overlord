@@ -143,25 +143,20 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
       focalPoint: widget.focalPoint,
       allowHorizontalArrow: false,
       padding: widget.padding,
-      useArrowArea: true,
+      extendAndClipContentOverArrow: true,
       child: _buildContent(),
     );
   }
 
   Widget _buildContent() {
-    // Expand the height so the buttons can be displayed over the arrow.
-    // Multiply by two because the menu reserves space for the arrow both
-    // above and bellow the content.
-    final height = widget.height + (widget.arrowLength * 2);
-
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
         return SizedBox(
-          height: height,
+          height: widget.height,
           child: _IosToolbarMenuContent(
             controller: _controller,
-            height: height,
+            height: widget.height,
             previousButton: _buildPreviousPageButton(),
             nextButton: _buildNextPageButton(),
             pages: widget.pages,
@@ -411,8 +406,13 @@ class _RenderIosPagedMenu extends RenderBox
 
   @override
   void performLayout() {
+    // Don't enforce tight constraints on the children.
+    // If we get tight constraints, we still want to let the children
+    // decide its width.
+    final looseConstraints = constraints.loosen();
+
     if (autoPaginated) {
-      _computePages();
+      _pages = _computePages(looseConstraints);
     }
     _scheduleUpdateControllerPageCount();
 
@@ -421,11 +421,16 @@ class _RenderIosPagedMenu extends RenderBox
     // Children include the navigation buttons.
     final children = getChildrenAsList();
 
+    // If we have to be a fixed height, ignore our desired height.
+    final effectiveHeight = constraints.hasTightHeight //
+        ? constraints.minHeight
+        : height;
+
     // Force the children to use a fixed height.
-    final innerConstraints = constraints.enforce(
+    final innerConstraints = looseConstraints.enforce(
       BoxConstraints(
-        minHeight: height,
-        maxHeight: height,
+        minHeight: effectiveHeight,
+        maxHeight: effectiveHeight,
       ),
     );
 
@@ -444,7 +449,7 @@ class _RenderIosPagedMenu extends RenderBox
       // Computes previous button position.
       final previousButton = children.first;
       final previousButtonParentData = previousButton.parentData as _IosPagerParentData;
-      previousButtonParentData.offset = Offset(accumulatedWith, (height - previousButton.size.height) / 2);
+      previousButtonParentData.offset = Offset(accumulatedWith, (effectiveHeight - previousButton.size.height) / 2);
 
       // Update current width.
       accumulatedWith += previousButton.size.width;
@@ -455,7 +460,7 @@ class _RenderIosPagedMenu extends RenderBox
       final child = children[i];
       final childSize = child.size;
       final childParentData = child.parentData as _IosPagerParentData;
-      childParentData.offset = Offset(accumulatedWith, (height - childSize.height) / 2);
+      childParentData.offset = Offset(accumulatedWith, (effectiveHeight - childSize.height) / 2);
 
       // Update current width.
       accumulatedWith += childSize.width;
@@ -465,13 +470,70 @@ class _RenderIosPagedMenu extends RenderBox
       // Computes next button position.
       final nextButton = children.last;
       final nextButtonButtonParentData = nextButton.parentData as _IosPagerParentData;
-      nextButtonButtonParentData.offset = Offset(accumulatedWith, (height - nextButton.size.height) / 2);
+      nextButtonButtonParentData.offset = Offset(accumulatedWith, (effectiveHeight - nextButton.size.height) / 2);
 
       // Update current width.
       accumulatedWith += nextButton.size.width;
     }
 
-    size = Size(accumulatedWith, height);
+    size = constraints.constrain(Size(accumulatedWith, effectiveHeight));
+  }
+
+  @override
+  Size computeDryLayout(BoxConstraints constraints) {
+    // Don't enforce tight constraints on the children.
+    // If we get tight constraints, we still want to let the children
+    // decide its width.
+    final looseConstraints = constraints.loosen();
+
+    final pages = autoPaginated //
+        ? _computePages(looseConstraints)
+        : _pages;
+
+    bool hasMultiplePages = pages?.isNotEmpty ?? false;
+
+    // Children include the navigation buttons.
+    final children = getChildrenAsList();
+
+    // If we have to be a fixed height, ignore our desired height.
+    final effectiveHeight = constraints.hasTightHeight //
+        ? constraints.minHeight
+        : height;
+
+    // Force the children to use a fixed height.
+    final innerConstraints = looseConstraints.enforce(
+      BoxConstraints(
+        minHeight: effectiveHeight,
+        maxHeight: effectiveHeight,
+      ),
+    );
+
+    // Page to be displayed.
+    final currentPage = pages![_controller.currentPage - 1];
+
+    double accumulatedWith = 0;
+
+    if (hasMultiplePages) {
+      final previousButton = children.first;
+
+      // Update current width.
+      accumulatedWith += previousButton.getDryLayout(innerConstraints).width;
+    }
+
+    for (int i = currentPage.startingIndex; i < currentPage.endingIndex; i++) {
+      // Update current width.
+      accumulatedWith += children[i].getDryLayout(innerConstraints).width;
+    }
+
+    if (hasMultiplePages) {
+      // Computes next button position.
+      final nextButton = children.last;
+
+      // Update current width.
+      accumulatedWith += nextButton.getDryLayout(innerConstraints).width;
+    }
+
+    return Size(accumulatedWith, effectiveHeight);
   }
 
   @override
@@ -574,7 +636,7 @@ class _RenderIosPagedMenu extends RenderBox
   /// This is used when the toolbar is configured to automatically compute the pages.
   ///
   /// Each page will contain as many items as possible, respecting the available width.
-  void _computePages() {
+  List<_MenuPageInfo> _computePages(BoxConstraints constraints) {
     final pages = <_MenuPageInfo>[];
     int currentPageStartingIndex = 1;
 
@@ -589,7 +651,7 @@ class _RenderIosPagedMenu extends RenderBox
     double currentPageWidth = 0.0;
     double buttonsWidth = previousButtonSize.width + nextButtonSize.width;
 
-    for (int i = 1; i < children.length; i++) {
+    for (int i = 1; i < children.length - 1; i++) {
       final child = children[i];
       final isLastChild = i == children.length - 1;
 
@@ -621,7 +683,7 @@ class _RenderIosPagedMenu extends RenderBox
       ),
     );
 
-    _pages = pages;
+    return pages;
   }
 
   void _scheduleUpdateControllerPageCount() {
