@@ -406,10 +406,14 @@ class _RenderIosPagedMenu extends RenderBox
 
   @override
   void performLayout() {
-    // Don't enforce tight constraints on the children.
+    // Don't enforce tight width constraints on the children.
     // If we get tight constraints, we still want to let the children
     // decide its width.
-    final looseConstraints = constraints.loosen();
+    final looseConstraints = BoxConstraints(
+      maxWidth: constraints.maxWidth,
+      minHeight: constraints.minHeight,
+      maxHeight: constraints.maxHeight,
+    );
 
     if (autoPaginated) {
       _pages = _computePages(looseConstraints);
@@ -481,10 +485,14 @@ class _RenderIosPagedMenu extends RenderBox
 
   @override
   Size computeDryLayout(BoxConstraints constraints) {
-    // Don't enforce tight constraints on the children.
+    // Don't enforce tight width constraints on the children.
     // If we get tight constraints, we still want to let the children
     // decide its width.
-    final looseConstraints = constraints.loosen();
+    final looseConstraints = BoxConstraints(
+      maxWidth: constraints.maxWidth,
+      minHeight: constraints.minHeight,
+      maxHeight: constraints.maxHeight,
+    );
 
     final pages = autoPaginated //
         ? _computePages(looseConstraints)
@@ -651,9 +659,14 @@ class _RenderIosPagedMenu extends RenderBox
     double currentPageWidth = 0.0;
     double buttonsWidth = previousButtonSize.width + nextButtonSize.width;
 
+    // Interates over the toolbar buttons, excluding the previous page and next page buttons.
     for (int i = 1; i < children.length - 1; i++) {
       final child = children[i];
-      final isLastChild = i == children.length - 1;
+
+      // Whether or not the current child is the last child.
+      //
+      // The last item in the list is the next page button.
+      final isLastChild = i == children.length - 2;
 
       final childSize = child.getDryLayout(constraints);
 
