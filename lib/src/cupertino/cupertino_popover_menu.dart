@@ -22,6 +22,7 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
     this.showDebugPaint = false,
     this.elevation = 0.0,
     this.shadowColor = const Color(0xFF000000),
+    this.extendAndClipContentOverArrow = false,
     super.child,
   }) : assert(elevation >= 0.0);
 
@@ -68,6 +69,25 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
   /// is determined by [elevation].
   final Color shadowColor;
 
+  /// Whether to extend the popup menu content over the popover's arrow, and clip the content around the arrow.
+  ///
+  /// A popover includes a rectangular content area, and an arrow that points at some relevant content
+  /// beneath the popover. Normally, the content within the popover is confined to the rectangular content
+  /// area - the arrow has no impact on the size of the content. However, in some cases, it's desirable for
+  /// the content to extend into the arrow space.
+  ///
+  /// For example, consider an iOS text editing toolbar. That toolbar appears above selected text with buttons
+  /// for "copy", "cut", "paste", etc. That toolbar has a popover arrow that points down towards the text. When
+  /// the user hovers the mouse over the arrow that points down, that arrow behaves as if it's part of the button
+  /// that sits directly above it. The button above the arrow shows a hover highlight, and if the user taps on the
+  /// little popover arrow, it activates the button right above it. To accomplish this, the buttons for the toolbar
+  /// need to extend vertically to include the height of the popover arrow. Then, those buttons need to be clipped
+  /// so that they match the shape of the arrow.
+  ///
+  /// When this property is `true`, its content is extended to cover the popover arrow, and then that content
+  /// is clipped to reflect the shape of the arrow.
+  final bool extendAndClipContentOverArrow;
+
   /// Whether to add decorations that show useful metrics for this popover's
   /// layout and position.
   final bool showDebugPaint;
@@ -85,6 +105,7 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
       shadowColor: shadowColor,
       focalPoint: focalPoint,
       allowHorizontalArrow: allowHorizontalArrow,
+      extendAndClipContentOverArrow: extendAndClipContentOverArrow,
       showDebugPaint: showDebugPaint,
     );
   }
@@ -103,6 +124,7 @@ class CupertinoPopoverMenu extends SingleChildRenderObjectWidget {
       ..elevation = elevation
       ..shadowColor = shadowColor
       ..allowHorizontalArrow = allowHorizontalArrow
+      ..extendAndClipContentOverArrow = extendAndClipContentOverArrow
       ..showDebugPaint = showDebugPaint;
   }
 }
@@ -118,6 +140,7 @@ class RenderPopover extends RenderShiftedBox {
     required MenuFocalPoint focalPoint,
     required Size screenSize,
     bool allowHorizontalArrow = true,
+    bool extendAndClipContentOverArrow = false,
     EdgeInsets? padding,
     bool showDebugPaint = false,
     RenderBox? child,
@@ -132,98 +155,138 @@ class RenderPopover extends RenderShiftedBox {
         _backgroundPaint = Paint()..color = backgroundColor,
         _focalPoint = focalPoint,
         _allowHorizontalArrow = allowHorizontalArrow,
+        _extendAndClipContentOverArrow = extendAndClipContentOverArrow,
         _showDebugPaint = showDebugPaint,
-        super(child);
+        super(child) {
+    _updateReservedSizeForArrow();
+    _updateShapeOffset();
+  }
 
   double _borderRadius;
   double get borderRadius => _borderRadius;
   set borderRadius(double value) {
-    if (_borderRadius != value) {
-      _borderRadius = value;
-      markNeedsLayout();
+    if (_borderRadius == value) {
+      return;
     }
+
+    _borderRadius = value;
+    markNeedsLayout();
   }
 
   double _arrowBaseWidth;
   double get arrowBaseWidth => _arrowBaseWidth;
   set arrowBaseWidth(double value) {
-    if (_arrowBaseWidth != value) {
-      _arrowBaseWidth = value;
-      markNeedsLayout();
+    if (_arrowBaseWidth == value) {
+      return;
     }
+
+    _arrowBaseWidth = value;
+    markNeedsLayout();
   }
 
   double _arrowLength;
   double get arrowLength => _arrowLength;
   set arrowLength(double value) {
-    if (_arrowLength != value) {
-      _arrowLength = value;
-      markNeedsLayout();
+    if (arrowLength == value) {
+      return;
     }
+
+    _arrowLength = value;
+    _updateReservedSizeForArrow();
+    _updateShapeOffset();
+    markNeedsLayout();
   }
 
   MenuFocalPoint _focalPoint;
   MenuFocalPoint get focalPoint => _focalPoint;
   set focalPoint(MenuFocalPoint value) {
-    if (_focalPoint != value) {
-      _focalPoint = value;
-      markNeedsLayout();
+    if (_focalPoint == value) {
+      return;
     }
+
+    _focalPoint = value;
+    markNeedsLayout();
   }
 
   EdgeInsets? _padding;
   EdgeInsets? get padding => _padding;
   set padding(EdgeInsets? value) {
-    if (_padding != value) {
-      _padding = value;
-      markNeedsLayout();
+    if (_padding == value) {
+      return;
     }
+
+    _padding = value;
+    markNeedsLayout();
   }
 
   Size _screenSize;
   Size get screenSize => _screenSize;
   set screenSize(Size value) {
-    if (value != _screenSize) {
-      _screenSize = value;
-      markNeedsLayout();
+    if (value == _screenSize) {
+      return;
     }
+
+    _screenSize = value;
+    markNeedsLayout();
   }
 
   Color _backgroundColor;
   Color get backgroundColor => _backgroundColor;
   set backgroundColor(Color value) {
-    if (value != _backgroundColor) {
-      _backgroundColor = value;
-      _backgroundPaint = Paint()..color = _backgroundColor;
-      markNeedsPaint();
+    if (value == _backgroundColor) {
+      return;
     }
+
+    _backgroundColor = value;
+    _backgroundPaint = Paint()..color = _backgroundColor;
+    markNeedsPaint();
   }
 
   double _elevation;
   double get elevation => _elevation;
   set elevation(double value) {
-    if (value != _elevation) {
-      _elevation = value;
-      markNeedsPaint();
+    if (value == _elevation) {
+      return;
     }
+
+    _elevation = value;
+    markNeedsPaint();
   }
 
   Color _shadowColor;
   Color get shadowColor => _shadowColor;
   set shadowColor(Color value) {
-    if (value != _shadowColor) {
-      _shadowColor = value;
-      markNeedsPaint();
+    if (value == _shadowColor) {
+      return;
     }
+
+    _shadowColor = value;
+    markNeedsPaint();
   }
 
   bool get allowHorizontalArrow => _allowHorizontalArrow;
   bool _allowHorizontalArrow;
   set allowHorizontalArrow(bool value) {
-    if (value != _allowHorizontalArrow) {
-      _allowHorizontalArrow = value;
-      markNeedsLayout();
+    if (value == _allowHorizontalArrow) {
+      return;
     }
+
+    _allowHorizontalArrow = value;
+    _updateReservedSizeForArrow();
+    _updateShapeOffset();
+    markNeedsLayout();
+  }
+
+  bool get extendAndClipContentOverArrow => _extendAndClipContentOverArrow;
+  bool _extendAndClipContentOverArrow;
+  set extendAndClipContentOverArrow(bool value) {
+    if (value == _extendAndClipContentOverArrow) {
+      return;
+    }
+
+    _extendAndClipContentOverArrow = value;
+    _updateReservedSizeForArrow();
+    markNeedsLayout();
   }
 
   set showDebugPaint(bool newValue) {
@@ -235,28 +298,87 @@ class RenderPopover extends RenderShiftedBox {
     markNeedsPaint();
   }
 
+  /// Returns the size which is be reserved to display the arrow.
+  ///
+  /// When [extendAndClipContentOverArrow] is `true`, no space is reserved for the arrow on the y-axis.
+  /// During paint, the [child] is clipped using the background shape. When it's `false`, we reserve the [arrowLength]
+  /// on both top and bottom sides.
+  ///
+  /// When [allowHorizontalArrow] is `false`, the arrow is only permitted to appear above and below the popup,
+  /// so we don't reserve any space on the x-axis. When it's `true` we reserve the [arrowLength] on both
+  /// left and right sides.
+  Size _reservedSizeForArrow = Size.zero;
+
+  /// Returns the offset from the top-left corner of this `RenderObject` to the top-left
+  /// corner of the toolbar background shape.
+  ///
+  /// The toolbar background shape is separated, for example, by the size of the arrow,
+  /// which might appear on the left side or top side of the toolbar background shape.
+  ///
+  /// The arrow is always permitted to appear above and below the popup, therefore
+  /// space is always set aside above and below the toolbar background shape.
+  /// However, left and right arrows are only permitted when [allowHorizontalArrow] is
+  /// `true`. When it's `false`, no space is allocated to the left and right sides of the
+  /// toolbar background shape, within this `RenderObject`.
+  Offset _backgroundShapeOffset = Offset.zero;
+
+  /// The popover background shape.
+  ///
+  /// Includes a rounded rectangle, along with an arrow that points in the general direction of the [focalPoint].
+  Path? _backgroundShapePath;
+
+  /// The offset from the top-left corner of this `RenderObject` to the top-left
+  /// corner of the content.
+  ///
+  /// This offset's `dx` is the same as the [_backgroundShapeOffset]'s `dx`, plus padding.
+  ///
+  /// When [extendAndClipContentOverArrow] is `true`, this offset's `dy` equals the top padding.
+  ///
+  /// When [extendAndClipContentOverArrow] is `false`, this offset's `dy` is the same as the
+  /// [_backgroundShapeOffset]'s `dy`, plus padding.
   Offset _contentOffset = Offset.zero;
 
   bool _showDebugPaint = false;
 
   late Paint _backgroundPaint;
 
+  /// Prevents the [ClipPathLayer]'s resources from being disposed.
+  ///
+  /// When the child's `needsCompositing` is `true`, a new layer is created for clipping during paint.
+  final LayerHandle<ClipPathLayer> _clipPathLayer = LayerHandle<ClipPathLayer>();
+
+  @override
+  void dispose() {
+    _clipPathLayer.layer = null;
+    super.dispose();
+  }
+
   @override
   void performLayout() {
     final reservedSize = Size(
-      (padding?.horizontal ?? 0) + (arrowLength * 2),
-      (padding?.vertical ?? 0) + (arrowLength * 2),
+      (padding?.horizontal ?? 0) + _reservedSizeForArrow.width,
+      (padding?.vertical ?? 0) + _reservedSizeForArrow.height,
     );
 
     // Compute the child constraints to leave space for the arrow and padding.
-    final innerConstraints = constraints.enforce(
+    BoxConstraints innerConstraints = constraints.enforce(
       BoxConstraints(
         maxHeight: min(_screenSize.height, constraints.maxHeight) - reservedSize.height,
         maxWidth: min(_screenSize.width, constraints.maxWidth) - reservedSize.width,
       ),
     );
 
-    _contentOffset = _computeContentOffset(arrowLength);
+    _contentOffset = _computeContentOffset();
+
+    if (_extendAndClipContentOverArrow) {
+      // Compute the size the child wants to be.
+      child!.layout(innerConstraints, parentUsesSize: true);
+
+      // Add room for the arrow in both top and bottom.
+      innerConstraints = constraints.enforce(
+        BoxConstraints(minHeight: child!.size.height + arrowLength * 2),
+      );
+    }
 
     child!.layout(innerConstraints, parentUsesSize: true);
 
@@ -286,23 +408,31 @@ class RenderPopover extends RenderShiftedBox {
       arrowCenter = 0.5;
     }
 
-    final borderPath = _buildBorderPath(direction, arrowCenter);
+    // Cache the background shape path, so it can be used in hit-testing.
+    _backgroundShapePath = _createBackgroundShapePath(direction, arrowCenter);
 
     if (elevation != 0.0) {
       final isMenuTranslucent = _backgroundColor.alpha != 0xFF;
       context.canvas.drawShadow(
-        borderPath,
+        _backgroundShapePath!,
         _shadowColor,
         _elevation,
         isMenuTranslucent,
       );
     }
 
-    context.canvas.drawPath(borderPath.shift(offset), _backgroundPaint);
+    context.canvas.drawPath(_backgroundShapePath!.shift(offset), _backgroundPaint);
 
-    if (child != null) {
-      context.paintChild(child!, offset + _contentOffset);
-    }
+    _clipPathLayer.layer = context.pushClipPath(
+      needsCompositing,
+      offset,
+      Offset.zero & child!.size,
+      _backgroundShapePath!,
+      (PaintingContext innerContext, Offset innerOffset) {
+        innerContext.paintChild(child!, innerOffset + _contentOffset);
+      },
+      oldLayer: _clipPathLayer.layer,
+    );
 
     if (_showDebugPaint) {
       context.canvas.drawRect(
@@ -328,6 +458,14 @@ class RenderPopover extends RenderShiftedBox {
 
   @override
   bool hitTest(BoxHitTestResult result, {required Offset position}) {
+    if (_backgroundShapePath == null) {
+      return false;
+    }
+
+    if (!_backgroundShapePath!.contains(position)) {
+      return false;
+    }
+
     if (hitTestChildren(result, position: position)) {
       return true;
     }
@@ -352,17 +490,17 @@ class RenderPopover extends RenderShiftedBox {
   /// Builds the path used to paint the menu.
   ///
   /// The path includes a rounded rectangle and a arrow pointing to [arrowDirection], centered at [arrowCenter].
-  Path _buildBorderPath(ArrowDirection arrowDirection, double arrowCenter) {
+  Path _createBackgroundShapePath(ArrowDirection arrowDirection, double arrowCenter) {
     final halfOfBase = arrowBaseWidth / 2;
 
-    // Adjust the rect to leave space for the arrow.
+    // The content size is the size of this `RenderObject`, minus the reserved arrow space.
     // During layout, we reserve space for the arrow in both x and y axis.
-    final contentRect = Rect.fromLTWH(
-      arrowLength,
-      arrowLength,
-      size.width - arrowLength * 2,
+    final contentSize = Size(
+      size.width - (allowHorizontalArrow ? arrowLength * 2 : 0),
       size.height - arrowLength * 2,
     );
+
+    final contentRect = _backgroundShapeOffset & contentSize;
 
     Path path = Path()..addRRect(RRect.fromRectAndRadius(contentRect, Radius.circular(borderRadius)));
 
@@ -429,10 +567,30 @@ class RenderPopover extends RenderShiftedBox {
   }
 
   /// Computes the (x, y) offset used to paint the menu content inside the popover.
-  Offset _computeContentOffset(double arrowLength) {
+  Offset _computeContentOffset() {
+    // This RenderObject's size includes the content size, the padding and twice the arrow length for both axis.
+    //
+    // During layout, we reserve space for the arrow on all sides.
+    //
+    // To accomodate the arrow we must shift the content. As we reserve twice the arrow length, we need to divide
+    // the reserved size by two, so we only shift one arrow length.
     return Offset(
-      (padding?.left ?? 0) + arrowLength,
-      (padding?.top ?? 0) + arrowLength,
+      (padding?.left ?? 0) + (_reservedSizeForArrow.width / 2.0),
+      (padding?.top ?? 0) + (_reservedSizeForArrow.height / 2.0),
+    );
+  }
+
+  void _updateReservedSizeForArrow() {
+    _reservedSizeForArrow = Size(
+      (allowHorizontalArrow ? arrowLength * 2 : 0),
+      (extendAndClipContentOverArrow ? 0.0 : arrowLength * 2),
+    );
+  }
+
+  void _updateShapeOffset() {
+    _backgroundShapeOffset = Offset(
+      (allowHorizontalArrow ? arrowLength : 0),
+      arrowLength,
     );
   }
 
@@ -451,11 +609,12 @@ class RenderPopover extends RenderShiftedBox {
       : _maxArrowVerticalCenter(arrowDirection);
 
   /// Minimum distance on the x-axis in which the arrow can be displayed without being above the corner.
-  double _minArrowHorizontalCenter(ArrowDirection arrowDirection) => (borderRadius + arrowBaseWidth / 2) + arrowLength;
+  double _minArrowHorizontalCenter(ArrowDirection arrowDirection) =>
+      (borderRadius + arrowBaseWidth / 2) + _backgroundShapeOffset.dx;
 
   /// Maximum distance on the x-axis in which the arrow can be displayed without being above the corner.
   double _maxArrowHorizontalCenter(ArrowDirection arrowDirection) =>
-      (size.width - borderRadius - arrowBaseWidth - arrowLength / 2);
+      (size.width - borderRadius - arrowBaseWidth - _backgroundShapeOffset.dx / 2);
 
   /// Minimum distance on the y-axis which the arrow can be displayed without being above the corner.
   double _minArrowVerticalCenter(ArrowDirection arrowDirection) => (borderRadius + arrowBaseWidth / 2) + arrowLength;

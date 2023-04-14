@@ -122,7 +122,7 @@ void main() {
         await _pumpToolbarScaffold(
           tester,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 300),
+            constraints: const BoxConstraints(maxWidth: 275),
             child: const CupertinoPopoverToolbar(
               focalPoint: StationaryMenuFocalPoint(Offset(250, 0)),
               children: [
@@ -144,19 +144,19 @@ void main() {
         await screenMatchesGolden(tester, 'cupertino-toolbar/auto-paginated-page1');
 
         // Tap the next page button.
-        await tester.tap(find.widgetWithIcon(TextButton, Icons.arrow_right));
+        await tester.tap(find.widgetWithIcon(TextButton, Icons.chevron_right));
         await tester.pumpAndSettle();
 
         await screenMatchesGolden(tester, 'cupertino-toolbar/auto-paginated-page2');
 
         // Tap the next page button.
-        await tester.tap(find.widgetWithIcon(TextButton, Icons.arrow_right));
+        await tester.tap(find.widgetWithIcon(TextButton, Icons.chevron_right));
         await tester.pumpAndSettle();
 
         await screenMatchesGolden(tester, 'cupertino-toolbar/auto-paginated-page3');
 
         // Tap the next page button.
-        await tester.tap(find.widgetWithIcon(TextButton, Icons.arrow_right));
+        await tester.tap(find.widgetWithIcon(TextButton, Icons.chevron_right));
         await tester.pumpAndSettle();
 
         await screenMatchesGolden(tester, 'cupertino-toolbar/auto-paginated-page4');
@@ -192,7 +192,7 @@ void main() {
         await screenMatchesGolden(tester, 'cupertino-toolbar/manual-pagination-page1');
 
         // Tap the next page button.
-        await tester.tap(find.widgetWithIcon(TextButton, Icons.arrow_right));
+        await tester.tap(find.widgetWithIcon(TextButton, Icons.chevron_right));
         await tester.pumpAndSettle();
 
         await screenMatchesGolden(tester, 'cupertino-toolbar/manual-pagination-page2');

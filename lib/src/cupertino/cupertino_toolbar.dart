@@ -27,6 +27,8 @@ class CupertinoPopoverToolbar extends StatefulWidget {
     this.backgroundColor = const Color(0xFF333333),
     this.elevation = 0.0,
     this.shadowColor = const Color(0xFF000000),
+    this.activeButtonTextColor = Colors.white,
+    this.inactiveButtonTextColor = Colors.grey,
     required this.children,
   })  : assert(elevation >= 0.0),
         pages = null,
@@ -45,6 +47,8 @@ class CupertinoPopoverToolbar extends StatefulWidget {
     this.backgroundColor = const Color(0xFF333333),
     this.elevation = 0.0,
     this.shadowColor = const Color(0xFF000000),
+    this.activeButtonTextColor = Colors.white,
+    this.inactiveButtonTextColor = Colors.grey,
     required this.pages,
   })  : height = height ?? 39.0,
         children = null;
@@ -96,6 +100,16 @@ class CupertinoPopoverToolbar extends StatefulWidget {
   /// is determined by [elevation].
   final Color shadowColor;
 
+  /// Text color for active buttons.
+  ///
+  /// Used for previous page and next page buttons.
+  final Color activeButtonTextColor;
+
+  /// Text color for inactive buttons.
+  ///
+  /// Used for previous page and next page buttons.
+  final Color inactiveButtonTextColor;
+
   /// Pages of menu items.
   ///
   /// Can't be provided if [children] are provided.
@@ -129,6 +143,7 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
       focalPoint: widget.focalPoint,
       allowHorizontalArrow: false,
       padding: widget.padding,
+      extendAndClipContentOverArrow: true,
       child: _buildContent(),
     );
   }
@@ -157,12 +172,14 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
     return TextButton(
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(0),
-        minimumSize: const Size(30, 0),
+        minimumSize: const Size(kMinInteractiveDimension, 0),
+        splashFactory: NoSplash.splashFactory,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       onPressed: _controller.previous,
       child: Icon(
-        Icons.arrow_left,
-        color: _controller.isFirstPage ? Colors.grey : Colors.white,
+        Icons.chevron_left,
+        color: _controller.isFirstPage ? widget.inactiveButtonTextColor : widget.activeButtonTextColor,
       ),
     );
   }
@@ -172,12 +189,14 @@ class _CupertinoPopoverToolbarState extends State<CupertinoPopoverToolbar> {
     return TextButton(
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(0),
-        minimumSize: const Size(30, 0),
+        minimumSize: const Size(kMinInteractiveDimension, 0),
+        splashFactory: NoSplash.splashFactory,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       onPressed: _controller.next,
       child: Icon(
-        Icons.arrow_right,
-        color: _controller.isLastPage ? Colors.grey : Colors.white,
+        Icons.chevron_right,
+        color: _controller.isLastPage ? widget.inactiveButtonTextColor : widget.activeButtonTextColor,
       ),
     );
   }
@@ -387,8 +406,20 @@ class _RenderIosPagedMenu extends RenderBox
 
   @override
   void performLayout() {
+    // We might get tight width constraints from our parent. This means this RenderObject have a fixed width.
+    //
+    // As the toolbar is expected to have multiple children, we don't want a single child to take
+    // all the available width.
+    //
+    // Remove the minWidth constraint to let the children choose their own width.
+    final looseConstraints = BoxConstraints(
+      maxWidth: constraints.maxWidth,
+      minHeight: constraints.minHeight,
+      maxHeight: constraints.maxHeight,
+    );
+
     if (autoPaginated) {
-      _computePages();
+      _pages = _computePages(looseConstraints);
     }
     _scheduleUpdateControllerPageCount();
 
@@ -397,11 +428,17 @@ class _RenderIosPagedMenu extends RenderBox
     // Children include the navigation buttons.
     final children = getChildrenAsList();
 
+    // If we get tight constraints, it means we should have a fixed height.
+    // As minHeight and maxHeight are equal, it doesn't matter which one we use.
+    final effectiveHeight = constraints.hasTightHeight //
+        ? constraints.minHeight
+        : height;
+
     // Force the children to use a fixed height.
-    final innerConstraints = constraints.enforce(
+    final innerConstraints = looseConstraints.enforce(
       BoxConstraints(
-        minHeight: height,
-        maxHeight: height,
+        minHeight: effectiveHeight,
+        maxHeight: effectiveHeight,
       ),
     );
 
@@ -420,7 +457,7 @@ class _RenderIosPagedMenu extends RenderBox
       // Computes previous button position.
       final previousButton = children.first;
       final previousButtonParentData = previousButton.parentData as _IosPagerParentData;
-      previousButtonParentData.offset = Offset(accumulatedWith, (height - previousButton.size.height) / 2);
+      previousButtonParentData.offset = Offset(accumulatedWith, (effectiveHeight - previousButton.size.height) / 2);
 
       // Update current width.
       accumulatedWith += previousButton.size.width;
@@ -431,7 +468,7 @@ class _RenderIosPagedMenu extends RenderBox
       final child = children[i];
       final childSize = child.size;
       final childParentData = child.parentData as _IosPagerParentData;
-      childParentData.offset = Offset(accumulatedWith, (height - childSize.height) / 2);
+      childParentData.offset = Offset(accumulatedWith, (effectiveHeight - childSize.height) / 2);
 
       // Update current width.
       accumulatedWith += childSize.width;
@@ -441,13 +478,13 @@ class _RenderIosPagedMenu extends RenderBox
       // Computes next button position.
       final nextButton = children.last;
       final nextButtonButtonParentData = nextButton.parentData as _IosPagerParentData;
-      nextButtonButtonParentData.offset = Offset(accumulatedWith, (height - nextButton.size.height) / 2);
+      nextButtonButtonParentData.offset = Offset(accumulatedWith, (effectiveHeight - nextButton.size.height) / 2);
 
       // Update current width.
       accumulatedWith += nextButton.size.width;
     }
 
-    size = Size(accumulatedWith, height);
+    size = Size(accumulatedWith, effectiveHeight);
   }
 
   @override
@@ -550,7 +587,7 @@ class _RenderIosPagedMenu extends RenderBox
   /// This is used when the toolbar is configured to automatically compute the pages.
   ///
   /// Each page will contain as many items as possible, respecting the available width.
-  void _computePages() {
+  List<_MenuPageInfo> _computePages(BoxConstraints constraints) {
     final pages = <_MenuPageInfo>[];
     int currentPageStartingIndex = 1;
 
@@ -565,9 +602,14 @@ class _RenderIosPagedMenu extends RenderBox
     double currentPageWidth = 0.0;
     double buttonsWidth = previousButtonSize.width + nextButtonSize.width;
 
-    for (int i = 1; i < children.length; i++) {
+    // Interates over the toolbar buttons, excluding the previous page and next page buttons.
+    for (int i = 1; i < children.length - 1; i++) {
       final child = children[i];
-      final isLastChild = i == children.length - 1;
+
+      // Whether or not the current child is the last child.
+      //
+      // The last item in the list is the next page button.
+      final isLastChild = i == children.length - 2;
 
       final childSize = child.getDryLayout(constraints);
 
@@ -597,7 +639,7 @@ class _RenderIosPagedMenu extends RenderBox
       ),
     );
 
-    _pages = pages;
+    return pages;
   }
 
   void _scheduleUpdateControllerPageCount() {
