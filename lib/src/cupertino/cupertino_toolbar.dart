@@ -406,9 +406,12 @@ class _RenderIosPagedMenu extends RenderBox
 
   @override
   void performLayout() {
-    // Don't enforce tight width constraints on the children.
-    // If we get tight constraints, we still want to let the children
-    // decide its width.
+    // We might get tight width constraints from our parent. This means this RenderObject have a fixed width.
+    //
+    // As the toolbar is expected to have multiple children, we don't want a single child to take
+    // all the available width.
+    //
+    // Remove the minWidth constraint to let the children choose their own width.
     final looseConstraints = BoxConstraints(
       maxWidth: constraints.maxWidth,
       minHeight: constraints.minHeight,
@@ -425,7 +428,8 @@ class _RenderIosPagedMenu extends RenderBox
     // Children include the navigation buttons.
     final children = getChildrenAsList();
 
-    // If we have to be a fixed height, ignore our desired height.
+    // If we get tight constraints, it means we should have a fixed height.
+    // As minHeight and maxHeight are equal, it doesn't matter which one we use.
     final effectiveHeight = constraints.hasTightHeight //
         ? constraints.minHeight
         : height;
@@ -480,68 +484,7 @@ class _RenderIosPagedMenu extends RenderBox
       accumulatedWith += nextButton.size.width;
     }
 
-    size = constraints.constrain(Size(accumulatedWith, effectiveHeight));
-  }
-
-  @override
-  Size computeDryLayout(BoxConstraints constraints) {
-    // Don't enforce tight width constraints on the children.
-    // If we get tight constraints, we still want to let the children
-    // decide its width.
-    final looseConstraints = BoxConstraints(
-      maxWidth: constraints.maxWidth,
-      minHeight: constraints.minHeight,
-      maxHeight: constraints.maxHeight,
-    );
-
-    final pages = autoPaginated //
-        ? _computePages(looseConstraints)
-        : _pages;
-
-    bool hasMultiplePages = pages?.isNotEmpty ?? false;
-
-    // Children include the navigation buttons.
-    final children = getChildrenAsList();
-
-    // If we have to be a fixed height, ignore our desired height.
-    final effectiveHeight = constraints.hasTightHeight //
-        ? constraints.minHeight
-        : height;
-
-    // Force the children to use a fixed height.
-    final innerConstraints = looseConstraints.enforce(
-      BoxConstraints(
-        minHeight: effectiveHeight,
-        maxHeight: effectiveHeight,
-      ),
-    );
-
-    // Page to be displayed.
-    final currentPage = pages![_controller.currentPage - 1];
-
-    double accumulatedWith = 0;
-
-    if (hasMultiplePages) {
-      final previousButton = children.first;
-
-      // Update current width.
-      accumulatedWith += previousButton.getDryLayout(innerConstraints).width;
-    }
-
-    for (int i = currentPage.startingIndex; i < currentPage.endingIndex; i++) {
-      // Update current width.
-      accumulatedWith += children[i].getDryLayout(innerConstraints).width;
-    }
-
-    if (hasMultiplePages) {
-      // Computes next button position.
-      final nextButton = children.last;
-
-      // Update current width.
-      accumulatedWith += nextButton.getDryLayout(innerConstraints).width;
-    }
-
-    return Size(accumulatedWith, effectiveHeight);
+    size = Size(accumulatedWith, effectiveHeight);
   }
 
   @override

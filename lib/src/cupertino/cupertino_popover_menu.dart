@@ -157,97 +157,124 @@ class RenderPopover extends RenderShiftedBox {
         _allowHorizontalArrow = allowHorizontalArrow,
         _extendAndClipContentOverArrow = extendAndClipContentOverArrow,
         _showDebugPaint = showDebugPaint,
-        super(child);
+        super(child) {
+    _updateReservedSizeForArrow();
+    _updateShapeOffset();
+  }
 
   double _borderRadius;
   double get borderRadius => _borderRadius;
   set borderRadius(double value) {
-    if (_borderRadius != value) {
-      _borderRadius = value;
-      markNeedsLayout();
+    if (_borderRadius == value) {
+      return;
     }
+
+    _borderRadius = value;
+    markNeedsLayout();
   }
 
   double _arrowBaseWidth;
   double get arrowBaseWidth => _arrowBaseWidth;
   set arrowBaseWidth(double value) {
-    if (_arrowBaseWidth != value) {
-      _arrowBaseWidth = value;
-      markNeedsLayout();
+    if (_arrowBaseWidth == value) {
+      return;
     }
+
+    _arrowBaseWidth = value;
+    markNeedsLayout();
   }
 
   double _arrowLength;
   double get arrowLength => _arrowLength;
   set arrowLength(double value) {
-    if (_arrowLength != value) {
-      _arrowLength = value;
-      markNeedsLayout();
+    if (arrowLength == value) {
+      return;
     }
+
+    _arrowLength = value;
+    _updateReservedSizeForArrow();
+    _updateShapeOffset();
+    markNeedsLayout();
   }
 
   MenuFocalPoint _focalPoint;
   MenuFocalPoint get focalPoint => _focalPoint;
   set focalPoint(MenuFocalPoint value) {
-    if (_focalPoint != value) {
-      _focalPoint = value;
-      markNeedsLayout();
+    if (_focalPoint == value) {
+      return;
     }
+
+    _focalPoint = value;
+    markNeedsLayout();
   }
 
   EdgeInsets? _padding;
   EdgeInsets? get padding => _padding;
   set padding(EdgeInsets? value) {
-    if (_padding != value) {
-      _padding = value;
-      markNeedsLayout();
+    if (_padding == value) {
+      return;
     }
+
+    _padding = value;
+    markNeedsLayout();
   }
 
   Size _screenSize;
   Size get screenSize => _screenSize;
   set screenSize(Size value) {
-    if (value != _screenSize) {
-      _screenSize = value;
-      markNeedsLayout();
+    if (value == _screenSize) {
+      return;
     }
+
+    _screenSize = value;
+    markNeedsLayout();
   }
 
   Color _backgroundColor;
   Color get backgroundColor => _backgroundColor;
   set backgroundColor(Color value) {
-    if (value != _backgroundColor) {
-      _backgroundColor = value;
-      _backgroundPaint = Paint()..color = _backgroundColor;
-      markNeedsPaint();
+    if (value == _backgroundColor) {
+      return;
     }
+
+    _backgroundColor = value;
+    _backgroundPaint = Paint()..color = _backgroundColor;
+    markNeedsPaint();
   }
 
   double _elevation;
   double get elevation => _elevation;
   set elevation(double value) {
-    if (value != _elevation) {
-      _elevation = value;
-      markNeedsPaint();
+    if (value == _elevation) {
+      return;
     }
+
+    _elevation = value;
+    markNeedsPaint();
   }
 
   Color _shadowColor;
   Color get shadowColor => _shadowColor;
   set shadowColor(Color value) {
-    if (value != _shadowColor) {
-      _shadowColor = value;
-      markNeedsPaint();
+    if (value == _shadowColor) {
+      return;
     }
+
+    _shadowColor = value;
+    markNeedsPaint();
   }
 
   bool get allowHorizontalArrow => _allowHorizontalArrow;
   bool _allowHorizontalArrow;
   set allowHorizontalArrow(bool value) {
-    if (value != _allowHorizontalArrow) {
-      _allowHorizontalArrow = value;
-      markNeedsLayout();
+    if (value == _allowHorizontalArrow) {
+      return;
     }
+
+    _allowHorizontalArrow = value;
+    _updateReservedSizeForArrow();
+    _updateShapeOffset();
+    markNeedsLayout();
   }
 
   bool get extendAndClipContentOverArrow => _extendAndClipContentOverArrow;
@@ -256,7 +283,9 @@ class RenderPopover extends RenderShiftedBox {
     if (value == _extendAndClipContentOverArrow) {
       return;
     }
+
     _extendAndClipContentOverArrow = value;
+    _updateReservedSizeForArrow();
     markNeedsLayout();
   }
 
@@ -278,10 +307,7 @@ class RenderPopover extends RenderShiftedBox {
   /// When [allowHorizontalArrow] is `false`, the arrow is only permitted to appear above and below the popup,
   /// so we don't reserve any space on the x-axis. When it's `true` we reserve the [arrowLength] on both
   /// left and right sides.
-  Size get _reservedSizeForArrow => Size(
-        (allowHorizontalArrow ? arrowLength * 2 : 0),
-        (extendAndClipContentOverArrow ? 0.0 : arrowLength * 2),
-      );
+  Size _reservedSizeForArrow = Size.zero;
 
   /// Returns the offset from the top-left corner of this `RenderObject` to the top-left
   /// corner of the toolbar background shape.
@@ -294,20 +320,22 @@ class RenderPopover extends RenderShiftedBox {
   /// However, left and right arrows are only permitted when [allowHorizontalArrow] is
   /// `true`. When it's `false`, no space is allocated to the left and right sides of the
   /// toolbar background shape, within this `RenderObject`.
-  Offset get _shapeOffset => Offset(
-        (allowHorizontalArrow ? arrowLength : 0),
-        arrowLength,
-      );
+  Offset _backgroundShapeOffset = Offset.zero;
+
+  /// The popover background shape.
+  ///
+  /// Includes a rounded rectangle, along with an arrow that points in the general direction of the [focalPoint].
+  Path? _backgroundShapePath;
 
   /// The offset from the top-left corner of this `RenderObject` to the top-left
   /// corner of the content.
   ///
-  /// This offset's `dx` is the same as the [_shapeOffset]'s `dx`, plus padding.
+  /// This offset's `dx` is the same as the [_backgroundShapeOffset]'s `dx`, plus padding.
   ///
   /// When [extendAndClipContentOverArrow] is `true`, this offset's `dy` equals the top padding.
   ///
   /// When [extendAndClipContentOverArrow] is `false`, this offset's `dy` is the same as the
-  /// [_shapeOffset]'s `dy`, plus padding.
+  /// [_backgroundShapeOffset]'s `dy`, plus padding.
   Offset _contentOffset = Offset.zero;
 
   bool _showDebugPaint = false;
@@ -318,11 +346,6 @@ class RenderPopover extends RenderShiftedBox {
   ///
   /// When the child's `needsCompositing` is `true`, a new layer is created for clipping during paint.
   final LayerHandle<ClipPathLayer> _clipPathLayer = LayerHandle<ClipPathLayer>();
-
-  /// The popover background shape.
-  ///
-  /// Includes a rounded rectangle, along with an arrow that points in the general direction of the [focalPoint].
-  Path? _backgroundShapePath;
 
   @override
   void dispose() {
@@ -386,7 +409,7 @@ class RenderPopover extends RenderShiftedBox {
     }
 
     // Cache the background shape path, so it can be used in hit-testing.
-    _backgroundShapePath = _buildBackgroundShapePath(direction, arrowCenter);
+    _backgroundShapePath = _createBackgroundShapePath(direction, arrowCenter);
 
     if (elevation != 0.0) {
       final isMenuTranslucent = _backgroundColor.alpha != 0xFF;
@@ -467,17 +490,17 @@ class RenderPopover extends RenderShiftedBox {
   /// Builds the path used to paint the menu.
   ///
   /// The path includes a rounded rectangle and a arrow pointing to [arrowDirection], centered at [arrowCenter].
-  Path _buildBackgroundShapePath(ArrowDirection arrowDirection, double arrowCenter) {
+  Path _createBackgroundShapePath(ArrowDirection arrowDirection, double arrowCenter) {
     final halfOfBase = arrowBaseWidth / 2;
 
-    // Adjust the size to leave space for the arrow.
+    // The content size is the size of this `RenderObject`, minus the reserved arrow space.
     // During layout, we reserve space for the arrow in both x and y axis.
-    final sizeWithoutArrow = Size(
+    final contentSize = Size(
       size.width - (allowHorizontalArrow ? arrowLength * 2 : 0),
       size.height - arrowLength * 2,
     );
 
-    final contentRect = _shapeOffset & sizeWithoutArrow;
+    final contentRect = _backgroundShapeOffset & contentSize;
 
     Path path = Path()..addRRect(RRect.fromRectAndRadius(contentRect, Radius.circular(borderRadius)));
 
@@ -545,14 +568,29 @@ class RenderPopover extends RenderShiftedBox {
 
   /// Computes the (x, y) offset used to paint the menu content inside the popover.
   Offset _computeContentOffset() {
-    // The reserved size includes the arrow length on both sides.
+    // This RenderObject's size includes the content size, the padding and twice the arrow length for both axis.
     //
-    // The width includes the arrow length in both left and right.
-    // The height includes the arrow length in both top and bottom.
-    // Divide by two, so we only translate one arrow length.
+    // During layout, we reserve space for the arrow on all sides.
+    //
+    // To accomodate the arrow we must shift the content. As we reserve twice the arrow length, we need to divide
+    // the reserved size by two, so we only shift one arrow length.
     return Offset(
       (padding?.left ?? 0) + (_reservedSizeForArrow.width / 2.0),
       (padding?.top ?? 0) + (_reservedSizeForArrow.height / 2.0),
+    );
+  }
+
+  void _updateReservedSizeForArrow() {
+    _reservedSizeForArrow = Size(
+      (allowHorizontalArrow ? arrowLength * 2 : 0),
+      (extendAndClipContentOverArrow ? 0.0 : arrowLength * 2),
+    );
+  }
+
+  void _updateShapeOffset() {
+    _backgroundShapeOffset = Offset(
+      (allowHorizontalArrow ? arrowLength : 0),
+      arrowLength,
     );
   }
 
@@ -572,11 +610,11 @@ class RenderPopover extends RenderShiftedBox {
 
   /// Minimum distance on the x-axis in which the arrow can be displayed without being above the corner.
   double _minArrowHorizontalCenter(ArrowDirection arrowDirection) =>
-      (borderRadius + arrowBaseWidth / 2) + _shapeOffset.dx;
+      (borderRadius + arrowBaseWidth / 2) + _backgroundShapeOffset.dx;
 
   /// Maximum distance on the x-axis in which the arrow can be displayed without being above the corner.
   double _maxArrowHorizontalCenter(ArrowDirection arrowDirection) =>
-      (size.width - borderRadius - arrowBaseWidth - _shapeOffset.dx / 2);
+      (size.width - borderRadius - arrowBaseWidth - _backgroundShapeOffset.dx / 2);
 
   /// Minimum distance on the y-axis which the arrow can be displayed without being above the corner.
   double _minArrowVerticalCenter(ArrowDirection arrowDirection) => (borderRadius + arrowBaseWidth / 2) + arrowLength;
