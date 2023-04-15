@@ -1,6 +1,6 @@
 name: overlord
 description: An assortment of widgets that loom over your content.
-version: 0.0.3
+version: 0.0.3+2
 homepage: https://github.com/flutter-bounty-hunters/overlord
 
 environment:
@@ -11,14 +11,14 @@ dependencies:
   flutter:
     sdk: flutter
 
-  follow_the_leader: ^0.0.4+1
+  follow_the_leader: ^0.0.4+2
   logging: ^1.0.1
 
-dependency_overrides:
-  follow_the_leader:
-    git:
-      url: https://github.com/Flutter-Bounty-Hunters/follow_the_leader
-      ref: main
+#dependency_overrides:
+#  follow_the_leader:
+#    git:
+#      url: https://github.com/Flutter-Bounty-Hunters/follow_the_leader
+#      ref: main
 
 dev_dependencies:
   flutter_test:

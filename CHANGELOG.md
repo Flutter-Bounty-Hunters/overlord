@@ -1,3 +1,16 @@
+## 0.0.3+2
+Better match for iOS popover and toolbar (April, 2023)
+
+ * Popover and toolbar can extend content into the popover's arrow region.
+ * Arrow icons replaced with chevrons.
+ * Adjusted some colors.
+
+## 0.0.3+1
+Toolbar elevation, `follow_the_leader` update (January, 2023)
+
+ * CupertinoPopoverToolbar and CupertinoPopoverMenu support elevation with shadows.
+ * Upgraded `follow_the_leader` to v0.0.4+2 to get updated Follower scaling support.
+
 ## 0.0.3
 Fidelity and nullability (January, 2023)
 
