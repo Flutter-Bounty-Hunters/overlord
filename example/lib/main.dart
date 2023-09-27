@@ -1,6 +1,7 @@
 import 'package:example/demos/demo_popover_menu.dart';
 import 'package:example/demos/demo_popover_menu_bouncing_ball.dart';
 import 'package:example/demos/demo_popover_menu_draggable_ball.dart';
+import 'package:example/demos/demo_scrolling_with_toolbar.dart';
 import 'package:example/demos/demo_toolbar.dart';
 import 'package:example/demos/demo_toolbar_bouncing_ball.dart';
 import 'package:example/demos/demo_toolbar_draggable_ball.dart';
@@ -92,6 +93,10 @@ final _items = [
   _MenuItem(
     title: 'Inventory',
     pageBuilder: (context) => const InventoryDemo(),
+  ),
+  _MenuItem(
+    title: 'Scrolling with iOS Toolbar',
+    pageBuilder: (context) => const ScrollingWithToolbarDemo(),
   ),
   _MenuItem(
     title: 'iOS Popover',
