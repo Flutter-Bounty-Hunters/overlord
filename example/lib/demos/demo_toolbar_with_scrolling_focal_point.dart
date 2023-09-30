@@ -3,14 +3,14 @@ import 'package:follow_the_leader/follow_the_leader.dart';
 import 'package:overlord/follow_the_leader.dart';
 import 'package:overlord/overlord.dart';
 
-class ScrollingWithToolbarDemo extends StatefulWidget {
-  const ScrollingWithToolbarDemo({super.key});
+class ToolbarWithScrollingFocalPointDemo extends StatefulWidget {
+  const ToolbarWithScrollingFocalPointDemo({super.key});
 
   @override
-  State<ScrollingWithToolbarDemo> createState() => _ScrollingWithToolbarDemoState();
+  State<ToolbarWithScrollingFocalPointDemo> createState() => _ToolbarWithScrollingFocalPointDemoState();
 }
 
-class _ScrollingWithToolbarDemoState extends State<ScrollingWithToolbarDemo> {
+class _ToolbarWithScrollingFocalPointDemoState extends State<ToolbarWithScrollingFocalPointDemo> {
   final _leaderLink = LeaderLink();
   final _viewportKey = GlobalKey();
 

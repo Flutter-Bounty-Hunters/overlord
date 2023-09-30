@@ -1,11 +1,12 @@
 import 'package:example/demos/demo_popover_menu.dart';
 import 'package:example/demos/demo_popover_menu_bouncing_ball.dart';
 import 'package:example/demos/demo_popover_menu_draggable_ball.dart';
-import 'package:example/demos/demo_scrolling_with_toolbar.dart';
 import 'package:example/demos/demo_toolbar.dart';
 import 'package:example/demos/demo_toolbar_bouncing_ball.dart';
 import 'package:example/demos/demo_toolbar_draggable_ball.dart';
+import 'package:example/demos/demo_toolbar_moving_focal_point.dart';
 import 'package:example/demos/demo_toolbar_wide_draggable_ball.dart';
+import 'package:example/demos/demo_toolbar_with_scrolling_focal_point.dart';
 import 'package:example/demos/inventory_demo.dart';
 import 'package:flutter/material.dart';
 
@@ -95,8 +96,12 @@ final _items = [
     pageBuilder: (context) => const InventoryDemo(),
   ),
   _MenuItem(
-    title: 'Scrolling with iOS Toolbar',
-    pageBuilder: (context) => const ScrollingWithToolbarDemo(),
+    title: 'iOS Toolbar Scrolling Focal Point',
+    pageBuilder: (context) => const ToolbarWithScrollingFocalPointDemo(),
+  ),
+  _MenuItem(
+    title: 'iOS Toolbar Expanding Focal Point',
+    pageBuilder: (context) => const ToolbarExpandingFocalPointDemo(),
   ),
   _MenuItem(
     title: 'iOS Popover',

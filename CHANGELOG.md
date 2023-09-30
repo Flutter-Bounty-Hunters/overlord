@@ -1,3 +1,6 @@
+## 0.0.3+4 - Sept, 2023
+Upgraded `follow_the_leader` to `0.0.4+5`.
+
 ## 0.0.3+3 - Sept, 2023
 Upgraded `follow_the_leader` to `0.0.4+4` and added a scrolling demo.
 

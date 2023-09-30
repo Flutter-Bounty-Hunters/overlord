@@ -11,12 +11,12 @@ dependencies:
   flutter:
     sdk: flutter
 
-  follow_the_leader: ^0.0.4+4
+  follow_the_leader: ^0.0.4+5
   overlord:
     path: ../
 
 #dependency_overrides:
-#  follower_the_leader:
+#  follow_the_leader:
 #    git:
 #      url: https://github.com/Flutter-Bounty-Hunters/follow_the_leader
 #      ref: main
