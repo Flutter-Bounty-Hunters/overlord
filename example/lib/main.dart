@@ -1,3 +1,5 @@
+import 'package:example/demos/demo_dropdown_list.dart';
+import 'package:example/demos/demo_dropdown_menu.dart';
 import 'package:example/demos/demo_popover_menu.dart';
 import 'package:example/demos/demo_popover_menu_bouncing_ball.dart';
 import 'package:example/demos/demo_popover_menu_draggable_ball.dart';
@@ -21,8 +23,9 @@ class OverlordExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Overlord Example',
-      theme: ThemeData.dark(),
+      theme: ThemeData.dark(useMaterial3: false),
       home: const OverlordDemoHomepage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -94,6 +97,14 @@ final _items = [
   _MenuItem(
     title: 'Inventory',
     pageBuilder: (context) => const InventoryDemo(),
+  ),
+  _MenuItem(
+    title: 'Dropdown Menu',
+    pageBuilder: (context) => const DropdownMenuDemo(),
+  ),
+  _MenuItem(
+    title: 'Dropdown List',
+    pageBuilder: (context) => const DropdownListDemo(),
   ),
   _MenuItem(
     title: 'iOS Toolbar Scrolling Focal Point',

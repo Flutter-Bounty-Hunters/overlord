@@ -405,11 +405,11 @@ Future<void> _pumpIosToolbar(
 }
 
 Future<void> _pumpToolbarScaffold(WidgetTester tester, {required Widget child}) async {
-  tester.binding.window
-    ..physicalSizeTestValue = const Size(500, 500)
+  tester.view
+    ..physicalSize = const Size(500, 500)
     ..platformDispatcher.textScaleFactorTestValue = 1.0
-    ..devicePixelRatioTestValue = 1.0;
-  addTearDown(() => tester.binding.window.clearAllTestValues());
+    ..devicePixelRatio = 1.0;
+  addTearDown(() => tester.view.reset());
 
   await tester.pumpWidget(
     MaterialApp(
@@ -425,11 +425,11 @@ Future<void> _pumpPopoverMenuTestApp(
   WidgetTester tester, {
   required Offset arrowFocalPoint,
 }) async {
-  tester.binding.window
-    ..physicalSizeTestValue = const Size(500, 500)
+  tester.view
+    ..physicalSize = const Size(500, 500)
     ..platformDispatcher.textScaleFactorTestValue = 1.0
-    ..devicePixelRatioTestValue = 1.0;
-  addTearDown(() => tester.binding.window.clearAllTestValues());
+    ..devicePixelRatio = 1.0;
+  addTearDown(() => tester.view.reset());
 
   await tester.pumpWidget(
     MaterialApp(
