@@ -20,7 +20,7 @@ void main() {
         );
       });
 
-      test("is never a container path", () {
+      test("is never contained with another path", () {
         expect(
           const MenuPath(["file", "new", "document"]).containsPath(
             const MenuPath([]),

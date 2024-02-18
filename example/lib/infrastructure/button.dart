@@ -71,7 +71,6 @@ class _ButtonState extends State<Button> {
   bool get _isEnabled => widget.enabled && widget.onPressed != null;
 
   void _onHoverEnter(PointerEnterEvent event) {
-    print("_onHoverEnter()");
     if (!_isEnabled) {
       return;
     }
@@ -123,13 +122,11 @@ class _ButtonState extends State<Button> {
     _border = widget.border;
 
     if (_isHovering) {
-      print("Update styles with hover - background on hover: ${widget.backgroundOnHover}");
       _background = widget.backgroundOnHover ?? _background;
       _border = widget.borderOnHover ?? _border;
     }
 
     if (_isPressed) {
-      print("Update styles with pressed");
       _background = widget.backgroundOnPress ?? _background;
       _border = widget.borderOnPress ?? _border;
     }

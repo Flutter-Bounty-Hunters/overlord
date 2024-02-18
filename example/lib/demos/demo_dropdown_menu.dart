@@ -365,15 +365,9 @@ class _MenuListItemState extends State<MenuListItem> {
 
   void _onHoverEnter() {
     widget.onHoverEnter?.call();
-
-    // if (widget.menuItem.subMenu != null) {
-    //   _popoverController.open();
-    // }
   }
 
-  void _onMenuItemPressed(MenuItem menuItem) {
-    // _popoverController.close();
-  }
+  void _onMenuItemPressed(MenuItem menuItem) {}
 
   @override
   Widget build(BuildContext context) {
@@ -625,7 +619,7 @@ class MenuGroup {
         return group[countToGo];
       }
 
-      countToGo - group.length;
+      countToGo -= group.length;
     }
 
     throw Exception("Couldn't find list item $index in groupedItems: $groupedItems");

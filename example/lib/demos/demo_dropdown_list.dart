@@ -164,7 +164,7 @@ class _AndroidStudioRunConfigurationListState extends State<AndroidStudioRunConf
   final _listFocusNode = FocusNode();
   final _editConfigurationsKey = GlobalKey();
 
-  GlobalKey? _activeItemKey;
+  late GlobalKey _activeItemKey;
 
   @override
   void initState() {

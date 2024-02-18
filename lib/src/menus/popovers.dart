@@ -25,6 +25,7 @@ class PopoverScaffold extends StatefulWidget {
     required this.popoverBuilder,
     this.popoverGeometry = const PopoverGeometry(),
     this.popoverFocusNode,
+    this.tapRegionGroupId,
     this.parentFocusNode,
     this.boundaryKey,
     this.onTapOutside = _PopoverScaffoldState.closePopoverOnTapOutside,
@@ -48,6 +49,12 @@ class PopoverScaffold extends StatefulWidget {
   ///
   /// Focus will be requested to this [FocusNode] when the popover is displayed.
   final FocusNode? popoverFocusNode;
+
+  /// A group ID for a tap region that is shared with the popover.
+  ///
+  /// Tapping on a [TapRegion] with the same [tapRegionGroupId]
+  /// won't invoke [onTapOutside].
+  final String? tapRegionGroupId;
 
   /// The [FocusNode], to which the popover [FocusNode] will be added as a child.
   ///
@@ -204,7 +211,7 @@ class _PopoverScaffoldState extends State<PopoverScaffold> {
 
   Widget _buildPopover(BuildContext context) {
     return TapRegion(
-      groupId: "popover-$hashCode",
+      groupId: widget.tapRegionGroupId,
       onTapOutside: _onTapOutsideOfPopover,
       child: Actions(
         actions: disabledMacIntents,
