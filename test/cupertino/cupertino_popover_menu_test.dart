@@ -33,7 +33,7 @@ Future<void> _pumpToolbarScaffold(WidgetTester tester, {required Widget child}) 
     ..physicalSize = const Size(500, 500)
     ..platformDispatcher.textScaleFactorTestValue = 1.0
     ..devicePixelRatio = 1.0;
-  addTearDown(() => tester.view.reset());
+  addTearDown(() => tester.platformDispatcher.clearAllTestValues());
 
   await tester.pumpWidget(
     MaterialApp(
