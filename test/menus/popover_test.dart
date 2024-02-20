@@ -142,13 +142,12 @@ void main() {
       // Ensure the popover is displayed.
       expect(find.byType(RoundedRectanglePopoverAppearance), findsOneWidget);
 
-      // FIXME: Flutter is blowing up at the following line. A segmentation fault. Fix that.
       // Tap the button.
-      // await tester.tap(find.byType(ElevatedButton));
-      // await tester.pump();
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pump();
 
-      // // Ensure the popover is still displayed.
-      // expect(find.byType(RoundedRectanglePopoverAppearance), findsOneWidget);
+      // Ensure the popover is still displayed.
+      expect(find.byType(RoundedRectanglePopoverAppearance), findsOneWidget);
     });
 
     testWidgetsOnAllPlatforms('enforces the given popover geometry', (tester) async {
