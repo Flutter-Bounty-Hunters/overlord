@@ -29,11 +29,11 @@ void main() {
 }
 
 Future<void> _pumpToolbarScaffold(WidgetTester tester, {required Widget child}) async {
-  tester.binding.window
-    ..physicalSizeTestValue = const Size(500, 500)
+  tester.view
+    ..physicalSize = const Size(500, 500)
     ..platformDispatcher.textScaleFactorTestValue = 1.0
-    ..devicePixelRatioTestValue = 1.0;
-  addTearDown(() => tester.binding.window.clearAllTestValues());
+    ..devicePixelRatio = 1.0;
+  addTearDown(() => tester.platformDispatcher.clearAllTestValues());
 
   await tester.pumpWidget(
     MaterialApp(
