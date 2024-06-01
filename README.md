@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/7259036/207250398-8a0d58a4-bebd-42a6-950e-d5559149b4b5.png" width="300" alt="Overlord"><br>
-  <span><b>An assortment of widgets that loom over your content.</b></span><br><br>
+  <img src="https://github.com/Flutter-Bounty-Hunters/overlord/assets/7259036/1a051c6d-47f5-4adc-acd9-5c8a8a3b4bc2" alt="Overlord - An assortment of widgets that loom over your content">
 </p>
 
-
-> This project is a Flutter Bounty Hunters [proof-of-concept](http://policies.flutterbountyhunters.com/proof-of-concept). Want more following features? [Fund a milestone](http://policies.flutterbountyhunters.com/fund-milestone) today!!
-
----
+<p align="center">
+  <a href="https://flutterbountyhunters.com" target="_blank">
+    <img src="https://github.com/Flutter-Bounty-Hunters/flutter_test_robots/assets/7259036/1b19720d-3dad-4ade-ac76-74313b67a898" alt="Built by the Flutter Bounty Hunters">
+  </a>
+</p>
