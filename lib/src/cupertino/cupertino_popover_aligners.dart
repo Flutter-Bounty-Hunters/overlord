@@ -7,19 +7,11 @@ import 'package:overlord/overlord.dart';
 /// Use with `Follower.withDynamics` to position the toolbar based on
 /// proximity to the bounds of the screen.
 class CupertinoPopoverToolbarAligner implements FollowerAligner {
-  CupertinoPopoverToolbarAligner([this._boundsKey]);
-
-  final GlobalKey? _boundsKey;
+  CupertinoPopoverToolbarAligner();
 
   @override
-  FollowerAlignment align(Rect globalLeaderRect, Size followerSize) {
-    final boundsBox = _boundsKey?.currentContext?.findRenderObject() as RenderBox?;
-    final bounds = boundsBox != null
-        ? Rect.fromPoints(
-            boundsBox.localToGlobal(Offset.zero),
-            boundsBox.localToGlobal(boundsBox.size.bottomRight(Offset.zero)),
-          )
-        : Rect.largest;
+  FollowerAlignment align(Rect globalLeaderRect, Size followerSize, [Rect? globalBounds]) {
+    final bounds = globalBounds ?? Rect.largest;
 
     late FollowerAlignment alignment;
     if (globalLeaderRect.top - followerSize.height - _popoverToolbarMinimumDistanceFromEdge < bounds.top) {
@@ -51,9 +43,7 @@ const double _popoverToolbarMinimumDistanceFromEdge = 16;
 /// Use with `Follower.withDynamics` to position the menu based on
 /// proximity to the bounds of the screen.
 class CupertinoPopoverMenuAligner implements FollowerAligner {
-  CupertinoPopoverMenuAligner([this._boundsKey]);
-
-  final GlobalKey? _boundsKey;
+  CupertinoPopoverMenuAligner();
 
   FollowerAlignment _previousFollowerAlignment = const FollowerAlignment(
     leaderAnchor: Alignment.topCenter,
@@ -62,14 +52,8 @@ class CupertinoPopoverMenuAligner implements FollowerAligner {
   );
 
   @override
-  FollowerAlignment align(Rect globalLeaderRect, Size followerSize) {
-    final boundsBox = _boundsKey?.currentContext?.findRenderObject() as RenderBox?;
-    final bounds = boundsBox != null
-        ? Rect.fromPoints(
-            boundsBox.localToGlobal(Offset.zero),
-            boundsBox.localToGlobal(boundsBox.size.bottomRight(Offset.zero)),
-          )
-        : Rect.largest;
+  FollowerAlignment align(Rect globalLeaderRect, Size followerSize, [Rect? globalBounds]) {
+    final bounds = globalBounds ?? Rect.largest;
 
     late FollowerAlignment alignment;
     if (globalLeaderRect.right + followerSize.width + _popoverMenuMinimumDistanceFromEdge >= bounds.right) {

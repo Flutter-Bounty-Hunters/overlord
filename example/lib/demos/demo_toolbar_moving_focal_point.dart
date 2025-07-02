@@ -151,7 +151,7 @@ class _ToolbarExpandingFocalPointDemoState extends State<ToolbarExpandingFocalPo
       boundary: WidgetFollowerBoundary(boundaryKey: _viewportKey),
       child: Follower.withAligner(
         link: _leaderLink,
-        aligner: CupertinoPopoverToolbarAligner(_viewportKey),
+        aligner: CupertinoPopoverToolbarAligner(),
         child: CupertinoPopoverToolbar(
           focalPoint: LeaderMenuFocalPoint(link: _leaderLink),
           // height: 54,

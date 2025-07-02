@@ -159,8 +159,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "52_add-boundaries-for-safe-area-and-keyboard"
-      resolved-ref: a0a3be1f7ead3abb618c04ad36115e134559d6bd
+      ref: d26ec930c8551b86185b5d66910445018150cbd7
+      resolved-ref: d26ec930c8551b86185b5d66910445018150cbd7
       url: "https://github.com/Flutter-Bounty-Hunters/follow_the_leader"
     source: git
     version: "0.0.4+8"

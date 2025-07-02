@@ -213,7 +213,7 @@ class _PopoverScaffoldState extends State<PopoverScaffold> {
           link: _popoverLink,
           boundary: _screenBoundary,
           aligner: FunctionalAligner(
-            delegate: (globalLeaderRect, followerSize) =>
+            delegate: (globalLeaderRect, followerSize, [globalBounds]) =>
                 widget.popoverGeometry.aligner.align(globalLeaderRect, followerSize, _screenSize, widget.boundaryKey),
           ),
           child: ConstrainedBox(
