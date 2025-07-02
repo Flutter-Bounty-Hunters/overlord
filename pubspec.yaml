@@ -12,14 +12,18 @@ dependencies:
     sdk: flutter
 
   collection: ^1.18.0
-  follow_the_leader: ^0.0.4+7
+#  follow_the_leader: ^0.0.4+7
+  follow_the_leader:
+    git:
+      url: https://github.com/Flutter-Bounty-Hunters/follow_the_leader
+      ref: 52_add-boundaries-for-safe-area-and-keyboard
   logging: ^1.0.1
 
-#dependency_overrides:
-#  follow_the_leader:
-#    git:
-#      url: https://github.com/Flutter-Bounty-Hunters/follow_the_leader
-#      ref: main
+dependency_overrides:
+  follow_the_leader:
+    git:
+      url: https://github.com/Flutter-Bounty-Hunters/follow_the_leader
+      ref: 52_add-boundaries-for-safe-area-and-keyboard
 
 dev_dependencies:
   flutter_test:

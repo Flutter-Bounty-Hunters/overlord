@@ -107,7 +107,7 @@ class _ToolbarExpandingFocalPointDemoState extends State<ToolbarExpandingFocalPo
                   height: 12,
                   width: _baseContentWidth + (2 * expansionExtent) + 2, // +2 for border
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white.withOpacity(0.1)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                   ),
                   child: Align(
                     alignment: Alignment.centerLeft,
@@ -148,10 +148,7 @@ class _ToolbarExpandingFocalPointDemoState extends State<ToolbarExpandingFocalPo
 
     return FollowerFadeOutBeyondBoundary(
       link: _leaderLink,
-      boundary: WidgetFollowerBoundary(
-        boundaryKey: _viewportKey,
-        devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
-      ),
+      boundary: WidgetFollowerBoundary(boundaryKey: _viewportKey),
       child: Follower.withAligner(
         link: _leaderLink,
         aligner: CupertinoPopoverToolbarAligner(_viewportKey),

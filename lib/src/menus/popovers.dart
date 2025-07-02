@@ -140,15 +140,9 @@ class _PopoverScaffoldState extends State<PopoverScaffold> {
   void _updateFollowerBoundary() {
     _screenSize = MediaQuery.sizeOf(context);
     if (widget.boundaryKey != null) {
-      _screenBoundary = WidgetFollowerBoundary(
-        boundaryKey: widget.boundaryKey,
-        devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
-      );
+      _screenBoundary = WidgetFollowerBoundary(boundaryKey: widget.boundaryKey);
     } else {
-      _screenBoundary = ScreenFollowerBoundary(
-        screenSize: _screenSize,
-        devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
-      );
+      _screenBoundary = const ScreenFollowerBoundary();
     }
   }
 

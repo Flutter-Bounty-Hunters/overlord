@@ -263,7 +263,7 @@ class _MenuListState extends State<MenuList> {
         decoration: BoxDecoration(
           color: const Color(0xFF2F2F2F),
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -422,12 +422,12 @@ class _MenuListItemState extends State<MenuListItem> {
                   Text(
                     widget.menuItem.shortcut!,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 if (widget.menuItem.subMenu != null) //
-                  Icon(Icons.arrow_right, size: 18, color: Colors.white.withOpacity(0.3)),
+                  Icon(Icons.arrow_right, size: 18, color: Colors.white.withValues(alpha: 0.3)),
               ],
             ),
           ),
