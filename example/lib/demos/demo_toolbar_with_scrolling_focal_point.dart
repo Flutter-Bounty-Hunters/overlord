@@ -26,12 +26,12 @@ class _ToolbarWithScrollingFocalPointDemoState extends State<ToolbarWithScrollin
                 constraints: const BoxConstraints(maxWidth: 300, maxHeight: 500),
                 child: ColoredBox(
                   key: _viewportKey,
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   child: SingleChildScrollView(
                     child: Container(
                       width: double.infinity,
                       height: 1000,
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withValues(alpha: 0.2),
                       child: Stack(
                         children: [
                           Positioned(
@@ -62,13 +62,10 @@ class _ToolbarWithScrollingFocalPointDemoState extends State<ToolbarWithScrollin
         ),
         FollowerFadeOutBeyondBoundary(
           link: _leaderLink,
-          boundary: WidgetFollowerBoundary(
-            boundaryKey: _viewportKey,
-            devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
-          ),
+          boundary: WidgetFollowerBoundary(boundaryKey: _viewportKey),
           child: Follower.withAligner(
             link: _leaderLink,
-            aligner: CupertinoPopoverToolbarAligner(_viewportKey),
+            aligner: CupertinoPopoverToolbarAligner(),
             child: CupertinoPopoverToolbar(
               focalPoint: LeaderMenuFocalPoint(link: _leaderLink),
               // height: 54,

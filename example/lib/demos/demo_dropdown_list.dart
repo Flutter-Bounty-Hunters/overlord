@@ -124,7 +124,7 @@ class AndroidStudioRunConfigDropdown extends StatelessWidget {
       background: const Color(0xFF2F2F2F),
       backgroundOnHover: const Color(0xFF333333),
       backgroundOnPress: const Color(0xFF353535),
-      border: BorderSide(color: Colors.white.withOpacity(0.1), width: 1),
+      border: BorderSide(color: Colors.white.withValues(alpha: 0.1), width: 1),
       borderRadius: BorderRadius.circular(4),
       onPressed: onPressed,
       child: Row(
@@ -244,7 +244,7 @@ class _AndroidStudioRunConfigurationListState extends State<AndroidStudioRunConf
         decoration: BoxDecoration(
           color: const Color(0xFF2F2F2F),
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -270,7 +270,7 @@ class _AndroidStudioRunConfigurationListState extends State<AndroidStudioRunConf
               child: Text(
                 "Run Configurations",
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   fontWeight: FontWeight.bold,
                 ),
               ),

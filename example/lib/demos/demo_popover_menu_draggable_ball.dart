@@ -32,7 +32,7 @@ class _PopoverMenuDraggableBallDemoState extends State<PopoverMenuDraggableBallD
   void initState() {
     super.initState();
 
-    _aligner = CupertinoPopoverMenuAligner(_screenBoundsKey);
+    _aligner = CupertinoPopoverMenuAligner();
 
     // After the first frame, calculate the menu focal point.
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

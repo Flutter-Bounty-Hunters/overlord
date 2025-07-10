@@ -33,7 +33,7 @@ class _PopoverMenuBouncingBallDemoState extends State<PopoverMenuBouncingBallDem
   @override
   void initState() {
     super.initState();
-    _aligner = CupertinoPopoverMenuAligner(_screenBoundsKey);
+    _aligner = CupertinoPopoverMenuAligner();
   }
 
   /// Calculates the global offset where the menu's arrow should point.

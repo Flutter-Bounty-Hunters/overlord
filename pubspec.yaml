@@ -12,14 +12,8 @@ dependencies:
     sdk: flutter
 
   collection: ^1.18.0
-  follow_the_leader: ^0.0.4+7
+  follow_the_leader: ^0.0.5
   logging: ^1.0.1
-
-#dependency_overrides:
-#  follow_the_leader:
-#    git:
-#      url: https://github.com/Flutter-Bounty-Hunters/follow_the_leader
-#      ref: main
 
 dev_dependencies:
   flutter_test:
@@ -27,9 +21,10 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   golden_toolkit: ^0.15.0
   flutter_test_runners: ^0.0.4
+  flutter_test_goldens: 0.0.7
 
   # For loading icon font files in tests
-  file: ^6.1.4
+  file: ^7.0.1
   platform: ^3.1.0
 
 flutter:

@@ -412,7 +412,7 @@ class RenderPopover extends RenderShiftedBox {
     _backgroundShapePath = _createBackgroundShapePath(direction, arrowCenter);
 
     if (elevation != 0.0) {
-      final isMenuTranslucent = _backgroundColor.alpha != 0xFF;
+      final isMenuTranslucent = (_backgroundColor.a * 255.0).round() != 0xFF;
       context.canvas.drawShadow(
         _backgroundShapePath!,
         _shadowColor,

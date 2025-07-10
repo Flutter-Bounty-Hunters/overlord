@@ -31,7 +31,7 @@ class _WideToolbarDraggableBallDemoState extends State<WideToolbarDraggableBallD
   void initState() {
     super.initState();
 
-    _aligner = CupertinoPopoverToolbarAligner(_screenBoundsKey);
+    _aligner = CupertinoPopoverToolbarAligner();
 
     // After the first frame, calculate the menu focal point.
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

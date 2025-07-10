@@ -84,7 +84,7 @@ class _ToolbarDemoState extends State<ToolbarDemo> {
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
         ),
         child: LayoutBuilder(builder: (context, constraints) {
           return demoBuilder(context, constraints.loosen());
@@ -496,8 +496,6 @@ class _ToolbarExampleState extends State<ToolbarExample> {
 
 class _DraggableDemo extends StatefulWidget {
   const _DraggableDemo({
-    // ignore: unused_element
-    super.key,
     required this.focalPoint,
     required this.children,
   });
