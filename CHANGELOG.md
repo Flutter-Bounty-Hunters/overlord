@@ -1,3 +1,9 @@
+# 0.4.0
+### July 10, 2025
+This release is the same as `0.0.4` - we're pushing up the version number to
+opt-in to `0.` semver Pub upgrade rules. This will hopefully avoid unexpected
+dependency upgrades for our users in the future.
+
 ## 0.0.4
 ### July 9, 2025
  * Upgraded `follow_the_leader` to `v0.0.5` which changed the `FollowerBoundary` 
