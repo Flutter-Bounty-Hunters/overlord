@@ -7,7 +7,18 @@ import 'package:overlord/overlord.dart';
 /// Use with `Follower.withDynamics` to position the toolbar based on
 /// proximity to the bounds of the screen.
 class CupertinoPopoverToolbarAligner implements FollowerAligner {
-  CupertinoPopoverToolbarAligner();
+  CupertinoPopoverToolbarAligner({
+    this.toolbarVerticalOffsetAbove = 20,
+    this.toolbarVerticalOffsetBelow = 20,
+  });
+
+  /// The vertical offset to apply between the toolbar and the leader
+  /// when the toolbar is positioned above the leader.
+  final double toolbarVerticalOffsetAbove;
+
+  /// The vertical offset to apply between the toolbar and the leader
+  /// when the toolbar is positioned below the leader.
+  final double toolbarVerticalOffsetBelow;
 
   @override
   FollowerAlignment align(Rect globalLeaderRect, Size followerSize, [Rect? globalBounds]) {
@@ -17,18 +28,18 @@ class CupertinoPopoverToolbarAligner implements FollowerAligner {
     if (globalLeaderRect.top - followerSize.height - _popoverToolbarMinimumDistanceFromEdge < bounds.top) {
       OverlordLogs.cupertinoToolbar.fine(" - follower is too far to the top, switching to bottom");
       // The follower hit the minimum distance. Invert the follower position.
-      alignment = const FollowerAlignment(
+      alignment = FollowerAlignment(
         leaderAnchor: Alignment.bottomCenter,
         followerAnchor: Alignment.topCenter,
-        followerOffset: Offset(0, 20),
+        followerOffset: Offset(0, toolbarVerticalOffsetBelow),
       );
     } else {
       // There's enough room to display toolbar above content. That's our desired
       // default position, so put the toolbar on top.
-      alignment = const FollowerAlignment(
+      alignment = FollowerAlignment(
         leaderAnchor: Alignment.topCenter,
         followerAnchor: Alignment.bottomCenter,
-        followerOffset: Offset(0, -20),
+        followerOffset: Offset(0, -toolbarVerticalOffsetAbove),
       );
     }
 
