@@ -453,7 +453,7 @@ class RenderPopover extends RenderShiftedBox {
   void applyPaintTransform(RenderObject child, Matrix4 transform) {
     // Applying our padding offset to the paint transform lets Flutter's
     // "Debug Paint" show the correct child widget bounds.
-    return transform.translate(_contentOffset.dx, _contentOffset.dy);
+    return transform.translateByDouble(_contentOffset.dx, _contentOffset.dy, 0, 0);
   }
 
   @override
