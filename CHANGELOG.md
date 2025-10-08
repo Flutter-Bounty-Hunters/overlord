@@ -1,3 +1,7 @@
+# 0.4.1
+### Oct 7, 2025
+ * Change `CupertinoPopoverToolbarAligner` to have a variable follower offset.
+
 # 0.4.0
 ### July 10, 2025
 This release is the same as `0.0.4` - we're pushing up the version number to
