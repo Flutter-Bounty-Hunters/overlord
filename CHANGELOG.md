@@ -1,3 +1,7 @@
+# 0.4.2
+### Oct 7, 2025
+ * Upgrade `follow_the_leader` dependency to `v0.5.1`.
+
 # 0.4.1
 ### Oct 7, 2025
  * Change `CupertinoPopoverToolbarAligner` to have a variable follower offset.
