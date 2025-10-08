@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  follow_the_leader: ^0.0.5
+  follow_the_leader: ^0.5.1
   overlord:
     path: ../
 
